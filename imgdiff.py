@@ -25,11 +25,17 @@ def main():
     parser = optparse.OptionParser('%prog image1 image2',
                 description='Compare two images side-by-side')
     parser.add_option('--viewer', default='builtin',
-                      help='use an external program to view an image')
+                      help='use an external program to view an image'
+                           ' instead using the builtin viewer')
     parser.add_option('--grace', type='int', default=1.0,
-                      help='seconds to wait before removing temporary file')
-    parser.add_option('--lr', '--left-right', action='store_const', const='lr',
+                      help='seconds to wait before removing temporary file'
+                           ' when using an external viewer, in case it forks'
+                           ' into background')
+    parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
+                      help='pick orientation automatically (default)')
+    parser.add_option('--lr', '--left-right', action='store_const', const='lr',
+                      dest='orientation',
                       help='force orientation to left-and-right')
     parser.add_option('--tb', '--top-bottom', action='store_const', const='tb',
                       dest='orientation',

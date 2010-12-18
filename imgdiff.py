@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-imgdiff version 1.2.0 by Marius Gedminas <marius@gedmin.as>
+imgdiff version 1.3.0 by Marius Gedminas <marius@gedmin.as>
 
 Released under the MIT licence.
 """
@@ -18,7 +18,7 @@ except ImportError:
     import Image, ImageDraw
 
 
-__version__ = "1.2.0"
+__version__ = "1.3.0dev"
 
 
 def main():

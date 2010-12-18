@@ -16,6 +16,14 @@ preview-pypi-description:
 test check:
 	@echo "Sure would be nice to have some tests ..."
 
+.PHONY: docs
+docs:
+	rm -rf build/docs
+	mkdir -p build/docs
+	@$(PYTHON) setup.py --long-description | rst2html --exit-status=2 > build/docs/index.html
+	cp example.png build/docs/
+	cd build/docs && zip ../docs.zip *
+
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py sdist

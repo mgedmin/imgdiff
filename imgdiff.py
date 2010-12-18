@@ -10,6 +10,15 @@ import shutil
 import subprocess
 import tempfile
 
+# There are two ways PIL is packaged
+try:
+    from PIL import Image, ImageDraw
+except ImportError:
+    import Image, ImageDraw
+
+
+__version__ = "1.2.0"
+
 
 def main():
     parser = optparse.OptionParser('%prog image1 image2',
@@ -29,8 +38,6 @@ def main():
     separator = 3
     bgcolor = (0xff, 0xff, 0xff, 0xff)
     separator_color = (0xcc, 0xcc, 0xcc, 0xff)
-
-    from PIL import Image, ImageDraw
 
     file1, file2 = args
     img1 = Image.open(file1).convert("RGBA")
@@ -66,7 +73,7 @@ def main():
     img.paste(img1, pos1)
     img.paste(img2, pos2)
     ImageDraw.Draw(img).line(separator_line, fill=separator_color)
-    if opts.viewer:
+    if opts.viewer != 'builtin':
         tempdir = tempfile.mkdtemp('imgdiff')
         try:
             imgfile = os.path.join(tempdir,

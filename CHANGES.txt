@@ -9,6 +9,10 @@ Changes
 - Added --eog as a shorter form of --viewer eog.  Guess what desktop
   environment I'm using ;)
 
+- New options for tweaking the output: --bgcolor, --sepcolor, --spacing.
+
+- A puny "test suite", runnable with imgdiff --selftest.
+
 
 1.3.0 (2010-12-18)
 ------------------

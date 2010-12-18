@@ -329,6 +329,10 @@ def simple_highlight(img1, img2, opts):
     diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
     diff = diff.filter(ImageFilter.MaxFilter(9))
     diff = tweak_diff(diff, opts.opacity)
+    # If the images have different sizes, the areas outside the alignment
+    # zone are considered to be dissimilar -- filling them with 0xff.
+    # Perhaps it would be better to compare those bits with bars of solid
+    # color, filled with opts.bgcolor?
     mask1 = Image.new('L', img1.size, 0xff)
     mask2 = Image.new('L', img2.size, 0xff)
     mask1.paste(diff, (x1, y1))

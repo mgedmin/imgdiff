@@ -62,20 +62,17 @@ def main():
                 description='Compare two images side-by-side')
 
     parser.add_option('-o', dest='outfile',
-                      help='write the combined image to a file'
-                           ' instead of showing it')
-    parser.add_option('--viewer', default='builtin',
-                      help='use an external program to view an image'
-                           ' instead using the builtin viewer')
+                      help='write the combined image to a file')
+    parser.add_option('--viewer', default='builtin', metavar='COMMAND',
+                      help='use an external image viewer (default: %default)')
     parser.add_option('--eog', action='store_const', dest='viewer', const='eog',
                       help='use Eye of Gnome (same as --viewer eog)')
-    parser.add_option('--grace', type='int', default=1.0,
+    parser.add_option('--grace', type='int', default=1.0, metavar='SECONDS',
                       help='seconds to wait before removing temporary file'
-                           ' when using an external viewer, in case it forks'
-                           ' into background')
+                           ' when using an external viewer (default: %default)')
 
     parser.add_option('-H', '--highlight', action='store_true',
-                      help='highlight differences (EXPERIMENTAL)')
+                      help='highlight differences (EXPERIMENTAL, slow)')
 
     parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
@@ -92,7 +89,7 @@ def main():
     parser.add_option('--sepcolor', default='ccc',
                       help='separator line color (default: %default)')
     parser.add_option('--spacing', type='int', default=3,
-                      help='spacing between images (default: %default)')
+                      help='spacing between images (default: %default pixels)')
 
     parser.add_option('--selftest', action='store_true',
                       help='run unit tests')

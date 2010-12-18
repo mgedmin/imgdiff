@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-imgdiff version 1.3.0 by Marius Gedminas <marius@gedmin.as>
+imgdiff by Marius Gedminas <marius@gedmin.as>
 
 Released under the MIT licence.
 """
@@ -18,24 +18,29 @@ except ImportError:
     import Image, ImageDraw, ImageChops, ImageOps, ImageFilter
 
 
-__version__ = "1.3.1dev"
+__version__ = "1.4.0dev"
 
 
 def main():
     parser = optparse.OptionParser('%prog image1 image2',
                 description='Compare two images side-by-side')
+
     parser.add_option('-o', dest='outfile',
                       help='write the combined image to a file'
                            ' instead of showing it')
     parser.add_option('--viewer', default='builtin',
                       help='use an external program to view an image'
                            ' instead using the builtin viewer')
+    parser.add_option('--eog', action='store_const', dest='viewer', const='eog',
+                      help='use Eye of Gnome (same as --viewer eog)')
     parser.add_option('--grace', type='int', default=1.0,
                       help='seconds to wait before removing temporary file'
                            ' when using an external viewer, in case it forks'
                            ' into background')
+
     parser.add_option('-H', '--highlight', action='store_true',
                       help='highlight differences (EXPERIMENTAL)')
+
     parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
                       help='pick orientation automatically (default)')
@@ -45,6 +50,7 @@ def main():
     parser.add_option('--tb', '--top-bottom', action='store_const', const='tb',
                       dest='orientation',
                       help='force orientation to top-and-bottom')
+
     opts, args = parser.parse_args()
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
@@ -150,7 +156,8 @@ def best_diff(img1, img2, bgcolor):
     pimg1.paste(img1, (0, 0))
     pimg2.paste(img2, (0, 0))
 
-    diff = Image.new('L', (W, H), 255)
+    diff1 = Image.new('L', (W, H), 255)
+    diff2 = Image.new('L', (W, H), 255)
 
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1
@@ -158,7 +165,7 @@ def best_diff(img1, img2, bgcolor):
     for x in range(xr):
         for y in range(yr):
             this = ImageChops.difference(pimg1, pimg2).convert('L')
-            this = this.filter(ImageFilter.MaxFilter(9))
+            this = this.filter(ImageFilter.MaxFilter(7))
             diff = ImageChops.darker(diff, this)
             if h1 > h2:
                 pimg2 = ImageChops.offset(pimg2, 0, 1)
@@ -172,6 +179,8 @@ def best_diff(img1, img2, bgcolor):
             pimg2 = ImageChops.offset(pimg2, 1, 0)
         else:
             pimg1 = ImageChops.offset(pimg1, 1, 0)
+
+    diff = diff.filter(ImageFilter.MaxFilter(5))
 
     diff1 = diff.crop((0, 0, w1, h1))
     diff2 = diff.crop((0, 0, w2, h2))

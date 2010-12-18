@@ -1,8 +1,13 @@
 Changes
 =======
 
-1.3.1 (unreleased)
+1.4.0 (unreleased)
 ------------------
+
+- An experimental --highlight (-H) option.
+
+- Added --eog as a shorter form of --viewer eog.  Guess what desktop
+  environment I'm using ;)
 
 
 1.3.0 (2010-12-18)

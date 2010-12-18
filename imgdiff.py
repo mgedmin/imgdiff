@@ -13,9 +13,9 @@ import time
 
 # There are two ways PIL is packaged
 try:
-    from PIL import Image, ImageDraw, ImageChops, ImageOps, ImageFilter
+    from PIL import Image, ImageDraw, ImageChops, ImageFilter
 except ImportError:
-    import Image, ImageDraw, ImageChops, ImageOps, ImageFilter
+    import Image, ImageDraw, ImageChops, ImageFilter
 
 
 __version__ = "1.3.1dev"
@@ -86,12 +86,19 @@ def main():
     img = Image.new('RGBA', size, bgcolor)
 
     if opts.highlight:
-        diff1, diff2 = best_diff(img1, img2, bgcolor)
-        img.paste(img1, pos1, diff1)
-        img.paste(img2, pos2, diff2)
+        w, h = min(w1, w2), min(h1, h2)
+        diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
+        diff = diff.point(lambda i: 64 + i * 2 // 3)
+        diff = diff.filter(ImageFilter.MaxFilter(9))
+        mask1 = Image.new('L', img1.size)
+        mask2 = Image.new('L', img2.size)
+        mask1.paste(diff, (x1, y1))
+        mask2.paste(diff, (x2, y2))
+        img.paste(img1, pos1, mask1)
+        img.paste(img2, pos2, mask2)
     else:
-        img.paste(img1, pos1)
-        img.paste(img2, pos2)
+        img.paste(img1, pos1, img1)
+        img.paste(img2, pos2, img2)
 
     ImageDraw.Draw(img).line(separator_line, fill=separator_color)
     if opts.outfile:
@@ -127,48 +134,35 @@ def diff(img1, img2, (x1, y1), (x2, y2)):
     return diff
 
 
-def tweak_diff(diff):
-    diff = diff.point(lambda i: 64 + i * 2 // 3)
-    return diff
-
-
 def diff_badness(diff):
     # identical pictures = black image = return 0
     # completely different pictures = white image = return lots
     return sum(i * n for i, n in enumerate(diff.histogram()))
 
 
-def best_diff(img1, img2, bgcolor):
-
+def best_diff(img1, img2):
     w1, h1 = img1.size
     w2, h2 = img2.size
-    W, H = max(w1, w2), max(h1, h2)
-
-    pimg1 = Image.new('RGB', (W, H), bgcolor)
-    pimg2 = Image.new('RGB', (W, H), bgcolor)
-
-    pimg1.paste(img1, (0, 0))
-    pimg2.paste(img2, (0, 0))
-
-    diff = Image.new('L', (W, H), 255)
-
+    w, h = min(w1, w2), min(h1, h2)
+    best = None
+    best_value = 255 * w * h + 1
     for x in range(abs(w1 - w2) + 1):
-        for y in range(abs(h1 - h2) + 1):
-            this = ImageChops.difference(pimg1, pimg2).convert('L')
-            this = this.filter(ImageFilter.MaxFilter(9))
-            diff = ImageChops.darker(diff, this)
-            if h1 > h2:
-                pimg2 = ImageChops.offset(pimg2, 0, 1)
-            else:
-                pimg1 = ImageChops.offset(pimg1, 0, 1)
         if w1 > w2:
-            pimg2 = ImageChops.offset(pimg2, 1, 0)
+            x1, x2 = x, 0
         else:
-            pimg1 = ImageChops.offset(pimg1, 1, 0)
-
-    diff1 = diff.crop((0, 0, w1, h1))
-    diff2 = diff.crop((0, 0, w2, h2))
-    return tweak_diff(diff1), tweak_diff(diff2)
+            x1, x2 = 0, x
+        for y in range(abs(h1 - h2) + 1):
+            if h1 > h2:
+                y1, y2 = y, 0
+            else:
+                y1, y2 = 0, y
+            this = diff(img1, img2, (x1, y1), (x2, y2))
+            this_value = diff_badness(this)
+            if this_value < best_value:
+                best = this
+                best_value = this_value
+                best_pos = (x1, y1), (x2, y2)
+    return best, best_pos
 
 
 if __name__ == '__main__':

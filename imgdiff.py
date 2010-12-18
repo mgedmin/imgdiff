@@ -21,6 +21,39 @@ except ImportError:
 __version__ = "1.4.0dev"
 
 
+def parse_color(color):
+    """Parse a color constant.
+
+        >>> parse_color('4bf')
+        (0x44, 0xbb, 0xff, 0xff)
+        >>> parse_color('ccce')
+        (0xcc, 0xcc, 0xcc, 0xee)
+        >>> parse_color('d8b4a2')
+        (0xd8, 0xb4, 0xa2, 0xff)
+        >>> parse_color('12345678')
+        (0x12, 0x34, 0x56, 0x78)
+
+    """
+    if len(color) not in (3, 4, 6, 8):
+        raise ValueError('bad color: %s; expected rgb/rgba/rrggbb/rrggbbaa'
+                          % color)
+    if len(color) in (3, 4):
+        r = int(color[0], 16) * 0x11
+        g = int(color[1], 16) * 0x11
+        b = int(color[2], 16) * 0x11
+    elif len(color) in (6, 8):
+        r = int(color[0:2], 16)
+        g = int(color[2:4], 16)
+        b = int(color[4:6], 16)
+    if len(color) == 4:
+        a = int(color[3], 16) * 0x11
+    elif len(color) == 8:
+        a = int(color[6:8], 16)
+    else:
+        a = 0xff
+    return (r, g, b, a)
+
+
 def main():
     parser = optparse.OptionParser('%prog image1 image2',
                 description='Compare two images side-by-side')
@@ -51,12 +84,15 @@ def main():
                       dest='orientation',
                       help='force orientation to top-and-bottom')
 
+    parser.add_option('--bgcolor', default='fff', dest='bgcolor',
+                      help='background color (default: %default)')
+
     opts, args = parser.parse_args()
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
     separator = 3
-    bgcolor = (0xff, 0xff, 0xff, 0xff)
+    bgcolor = parse_color(opts.bgcolor)
     separator_color = (0xcc, 0xcc, 0xcc, 0xff)
 
     file1, file2 = args

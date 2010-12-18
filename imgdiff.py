@@ -25,7 +25,10 @@ __version__ = "1.4.0dev"
 
 
 def parse_color(color):
-    """Parse a color constant.
+    """Parse a color value.
+
+    I've decided not to expect a leading '#' because it's a comment character
+    in some shells.
 
         >>> parse_color('4bf') == (0x44, 0xbb, 0xff, 0xff)
         True
@@ -36,10 +39,10 @@ def parse_color(color):
         >>> parse_color('12345678') == (0x12, 0x34, 0x56, 0x78)
         True
 
+    Raises ValueError on errors.
     """
     if len(color) not in (3, 4, 6, 8):
-        raise ValueError('bad color %r; expected rgb/rgba/rrggbb/rrggbbaa'
-                          % color)
+        raise ValueError('bad color %s' % repr(color))
     if len(color) in (3, 4):
         r = int(color[0], 16) * 0x11
         g = int(color[1], 16) * 0x11
@@ -58,6 +61,14 @@ def parse_color(color):
 
 
 def check_color(option, opt, value):
+    """Validate and convert an option value of type 'color'.
+
+    ``option`` is an optparse.Option instance.
+
+    ``opt`` is a string with the user-supplied option name (e.g. '--bgcolor').
+
+    ``value`` is the user-supplied value.
+    """
     try:
         return parse_color(value)
     except ValueError:
@@ -222,24 +233,43 @@ def tile_images(img1, img2, mask1, mask2, opts):
 
 
 def spawn_viewer(viewer, img, filename, grace):
+    """Launch an external program to view an image.
+
+    ``img`` is an Image object.
+
+    ``viewer`` is a command name.  Arguments are not allowed; exactly one
+    argument will be passed: the name of the image file.
+
+    ``filename`` is the suggested filename for a temporary file.
+
+    ``grace`` is the number of seconds to wait after spawning the viewer
+    before removing the temporary file.  Useful if your viewer forks
+    into background before it opens the file.
+    """
     tempdir = tempfile.mkdtemp('imgdiff')
     try:
         imgfile = os.path.join(tempdir, filename)
         img.save(imgfile)
         started = time.time()
         subprocess.call([viewer, imgfile])
-        # program exited too quickly, I think it forked and so may not
-        # have had enough time to even start looking for the temp file
-        # we just created
         elapsed = time.time() - started
         if elapsed < grace:
+            # Program exited too quickly. I think it forked and so may not
+            # have had enough time to even start looking for the temp file
+            # we just created. Wait a bit before removing the temp file.
             time.sleep(grace - elapsed)
     finally:
         shutil.rmtree(tempdir)
 
 
 def tweak_diff(diff, opacity):
-    # map 0..255 to opacity..255
+    """Adjust a difference map into an opacity mask for a given lowest opacity.
+
+    Performs a linear map from [0; 255] to [opacity; 255].
+
+    The result is that similar areas will have a given opacity, while
+    dissimilar areas will be opaque.
+    """
     mask = diff.point(lambda i: opacity + i * (255 - opacity) // 255)
     return mask
 
@@ -289,10 +319,16 @@ def simple_highlight(img1, img2, opts):
     """Try to align the two images to minimize pixel differences.
 
     Produces two masks for img1 and img2.
+
+    The algorithm works by comparing every possible alignment of the images,
+    finding the aligment that minimzes the differences, and then smoothing
+    it a bit to reduce spurious matches in areas that are perceptibly
+    different (e.g. text).
     """
+
     diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
-    diff = tweak_diff(diff, opts.opacity)
     diff = diff.filter(ImageFilter.MaxFilter(9))
+    diff = tweak_diff(diff, opts.opacity)
     mask1 = Image.new('L', img1.size, 0xff)
     mask2 = Image.new('L', img2.size, 0xff)
     mask1.paste(diff, (x1, y1))
@@ -304,6 +340,23 @@ def slow_highlight(img1, img2, opts):
     """Try to find similar areas between two images.
 
     Produces two masks for img1 and img2.
+
+    The algorithm works by comparing every possible alignment of the images,
+    smoothing it a bit to reduce spurious matches in areas that are
+    perceptibly different (e.g. text), and then taking the point-wise minimum
+    of all those difference maps.
+
+    This way if you insert a few pixel rows/columns into an image, similar
+    areas should match even if different areas need to be aligned with
+    different shifts.
+
+    As you can imagine, this brute-force approach can be pretty slow, if
+    there are many possible alignments.  The closer the images are in size,
+    the faster this will work.
+
+    If would work better if it could compare alignments that go beyond the
+    outer boundaries of the images, in case some pixels got shifted closer
+    to an edge.
     """
     w1, h1 = img1.size
     w2, h2 = img2.size
@@ -350,10 +403,15 @@ def slow_highlight(img1, img2, opts):
 
 
 def test_suite():
+    """Collect all the tests into a test suite."""
     return doctest.DocTestSuite()
 
 
 def run_tests():
+    """Run the test suite.
+
+    Invokes sys.exit() with a zero or non-zero status code as appropriate
+    """
     unittest.main(defaultTest='test_suite')
 
 

@@ -140,8 +140,7 @@ def main():
     else:
         mask1 = mask2 = None
 
-    img = tile_images(img1, img2, bgcolor, separator_color,
-                      separator, opts.orientation, mask1, mask2)
+    img = tile_images(img1, img2, mask1, mask2, opts)
 
     if opts.outfile:
         img.save(opts.outfile)
@@ -153,7 +152,7 @@ def main():
         spawn_viewer(opts.viewer, img, name, grace=opts.grace)
 
 
-def pick_orientation(img1, img2, separator):
+def pick_orientation(img1, img2, spacing):
     """Pick a tiling orientation for two images.
 
     Returns either 'lr' for left-and-right, or 'tb' for top-and-bottom.
@@ -164,8 +163,8 @@ def pick_orientation(img1, img2, separator):
     w1, h1 = img1.size
     w2, h2 = img2.size
 
-    size_a = (w1 + separator + w2, max(h1, h2, 1))
-    size_b = (max(w1, w2, 1), h1 + separator + h2)
+    size_a = (w1 + spacing + w2, max(h1, h2, 1))
+    size_b = (max(w1, w2, 1), h1 + spacing + h2)
 
     aspect_a = max(size_a) / min(size_a)  # this way it's >= 1
     aspect_b = max(size_b) / min(size_b)  # ditto
@@ -175,43 +174,43 @@ def pick_orientation(img1, img2, separator):
     return 'lr' if aspect_a < aspect_b else 'tb'
 
 
-def tile_images(img1, img2, bgcolor, separator_color, separator, orientation,
-                mask1, mask2):
+def tile_images(img1, img2, mask1, mask2, opts):
     """Combine two images into one by tiling them.
 
-    Fills unused areas with ``bgcolor``.
+    ``mask1`` and ``mask2`` provide optional masks for alpha-blending;
+    pass None to avoid.
 
-    Puts a ``separator``-wide bar with a thin line of ``separator_color``
+    Fills unused areas with ``opts.bgcolor``.
+
+    Puts a ``opts.spacing``-wide bar with a thin line of ``opts.sepcolor``
     color between them.
 
-    ``orientation`` is either 'lr' for left-and-right, or 'tb' for
+    ``opts.orientation`` can be 'lr' for left-and-right, 'tb' for
     top-and-bottom, or 'auto' for automatic.
-
-    ``mask1`` and ``mask2`` provide masks for alpha-blending.
     """
     w1, h1 = img1.size
     w2, h2 = img2.size
 
-    if orientation == 'auto':
-        orientation = pick_orientation(img1, img2, separator)
+    if opts.orientation == 'auto':
+        opts.orientation = pick_orientation(img1, img2, opts.spacing)
 
-    if orientation == 'lr':
-        w, h = (w1 + separator + w2, max(h1, h2, 1))
+    if opts.orientation == 'lr':
+        w, h = (w1 + opts.spacing + w2, max(h1, h2, 1))
         pos1 = (0, (h - h1) // 2)
-        pos2 = (w1 + separator, (h - h2) // 2)
-        separator_line = [(w1+separator//2, 0), (w1+separator//2, h)]
+        pos2 = (w1 + opts.spacing, (h - h2) // 2)
+        separator_line = [(w1+opts.spacing//2, 0), (w1+opts.spacing//2, h)]
     else:
-        w, h = (max(w1, w2, 1), h1 + separator + h2)
+        w, h = (max(w1, w2, 1), h1 + opts.spacing + h2)
         pos1 = ((w - w1) // 2, 0)
-        pos2 = ((w - w2) // 2, h1 + separator)
-        separator_line = [(0, h1+separator//2), (w, h1+separator//2)]
+        pos2 = ((w - w2) // 2, h1 + opts.spacing)
+        separator_line = [(0, h1+opts.spacing//2), (w, h1+opts.spacing//2)]
 
-    img = Image.new('RGBA', (w, h), bgcolor)
+    img = Image.new('RGBA', (w, h), opts.bgcolor)
 
     img.paste(img1, pos1, mask1)
     img.paste(img2, pos2, mask2)
 
-    ImageDraw.Draw(img).line(separator_line, fill=separator_color)
+    ImageDraw.Draw(img).line(separator_line, fill=opts.sepcolor)
 
     return img
 

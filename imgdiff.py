@@ -106,6 +106,8 @@ def main():
                       help='separator line color (default: %default)')
     parser.add_option('--spacing', type='int', default=3, metavar='N',
                       help='spacing between images (default: %default pixels)')
+    parser.add_option('--border', type='int', default=0, metavar='N',
+                      help='border around images (default: %default pixels)')
 
     parser.add_option('--selftest', action='store_true',
                       help='run unit tests')
@@ -194,16 +196,18 @@ def tile_images(img1, img2, mask1, mask2, opts):
     if opts.orientation == 'auto':
         opts.orientation = pick_orientation(img1, img2, opts.spacing)
 
+    B, S = opts.border, opts.spacing
+
     if opts.orientation == 'lr':
-        w, h = (w1 + opts.spacing + w2, max(h1, h2, 1))
-        pos1 = (0, (h - h1) // 2)
-        pos2 = (w1 + opts.spacing, (h - h2) // 2)
-        separator_line = [(w1+opts.spacing//2, 0), (w1+opts.spacing//2, h)]
+        w, h = (B + w1 + S + w2 + B, B + max(h1, h2) + B)
+        pos1 = (B, (h - h1) // 2)
+        pos2 = (B + w1 + S, (h - h2) // 2)
+        separator_line = [(B + w1 + S//2, 0), (B + w1 + S//2, h)]
     else:
-        w, h = (max(w1, w2, 1), h1 + opts.spacing + h2)
-        pos1 = ((w - w1) // 2, 0)
-        pos2 = ((w - w2) // 2, h1 + opts.spacing)
-        separator_line = [(0, h1+opts.spacing//2), (w, h1+opts.spacing//2)]
+        w, h = (B + max(w1, w2) + B, B + h1 + S + h2 + B)
+        pos1 = ((w - w1) // 2, B)
+        pos2 = ((w - w2) // 2, B + h1 + S)
+        separator_line = [(0, B + h1 + S//2), (w, B + h1 + S//2)]
 
     img = Image.new('RGBA', (w, h), opts.bgcolor)
 

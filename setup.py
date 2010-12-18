@@ -25,6 +25,10 @@ def get_version():
             return m.group(1)
 
 
+def get_description():
+    return read('README.txt')
+
+
 setup(name='imgdiff',
       version=get_version(),
       author='Marius Gedminas',
@@ -32,16 +36,7 @@ setup(name='imgdiff',
       url='http://pypi.python.org/pypi/imgdiff/',
       license='MIT',
       description='Present two images side-by-side for visual comparison',
-      long_description="""
-      A command-line tool that combines two pictures into a single, larger
-      one, and opens a GUI window (provided by the Python Imaging Library)
-      or an external image viewer.
-
-      You could use it with a version control tool, e.g. ::
-
-          bzr diff --using=imgdiff *.png
-
-      """,
+      long_description=get_description(),
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',

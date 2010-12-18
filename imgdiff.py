@@ -24,6 +24,9 @@ __version__ = "1.3.0dev"
 def main():
     parser = optparse.OptionParser('%prog image1 image2',
                 description='Compare two images side-by-side')
+    parser.add_option('-o', dest='outfile',
+                      help='write the combined image to a file'
+                           ' instead of showing it')
     parser.add_option('--viewer', default='builtin',
                       help='use an external program to view an image'
                            ' instead using the builtin viewer')
@@ -82,7 +85,11 @@ def main():
     img.paste(img1, pos1)
     img.paste(img2, pos2)
     ImageDraw.Draw(img).line(separator_line, fill=separator_color)
-    if opts.viewer != 'builtin':
+    if opts.outfile:
+        img.save(opts.outfile)
+    elif opts.viewer == 'builtin':
+        img.show()
+    else:
         tempdir = tempfile.mkdtemp('imgdiff')
         try:
             imgfile = os.path.join(tempdir,
@@ -99,8 +106,6 @@ def main():
                 time.sleep(opts.grace - elapsed)
         finally:
             shutil.rmtree(tempdir)
-    else:
-        img.show()
 
 
 if __name__ == '__main__':

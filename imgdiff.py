@@ -24,6 +24,7 @@ except ImportError:
 __version__ = "1.4.0dev"
 
 
+
 def parse_color(color):
     """Parse a color constant.
 
@@ -57,9 +58,24 @@ def parse_color(color):
     return (r, g, b, a)
 
 
+def check_color(option, opt, value):
+    try:
+        return parse_color(value)
+    except ValueError, e:
+        raise optparse.OptionValueError("option %s: invalid color value: %r"
+                                         % (opt, value))
+
+
+class MyOption(optparse.Option):
+    TYPES = optparse.Option.TYPES + ("color", )
+    TYPE_CHECKER = optparse.Option.TYPE_CHECKER.copy()
+    TYPE_CHECKER["color"] = check_color
+
+
 def main():
     parser = optparse.OptionParser('%prog image1 image2',
-                description='Compare two images side-by-side')
+                description='Compare two images side-by-side',
+                option_class=MyOption)
 
     parser.add_option('-o', dest='outfile',
                       help='write the combined image to a file')
@@ -84,11 +100,11 @@ def main():
                       dest='orientation',
                       help='force orientation to top-and-bottom')
 
-    parser.add_option('--bgcolor', default='fff',
+    parser.add_option('--bgcolor', default='fff', type='color', metavar='RGB',
                       help='background color (default: %default)')
-    parser.add_option('--sepcolor', default='ccc',
+    parser.add_option('--sepcolor', default='ccc', type='color', metavar='RGB',
                       help='separator line color (default: %default)')
-    parser.add_option('--spacing', type='int', default=3,
+    parser.add_option('--spacing', type='int', default=3, metavar='N',
                       help='spacing between images (default: %default pixels)')
 
     parser.add_option('--selftest', action='store_true',
@@ -103,12 +119,9 @@ def main():
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
-    try:
-        separator = opts.spacing
-        bgcolor = parse_color(opts.bgcolor)
-        separator_color = parse_color(opts.sepcolor)
-    except ValueError, e:
-        parser.error(e)
+    separator = opts.spacing
+    bgcolor = opts.bgcolor
+    separator_color = opts.sepcolor
 
     file1, file2 = args
 
@@ -164,7 +177,7 @@ def pick_orientation(img1, img2, separator):
 
 def tile_images(img1, img2, bgcolor, separator_color, separator, orientation,
                 mask1, mask2):
-    """Combine two images into a one.
+    """Combine two images into one by tiling them.
 
     Fills unused areas with ``bgcolor``.
 

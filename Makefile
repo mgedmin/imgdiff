@@ -12,6 +12,10 @@ preview-pypi-description:
 	# pip install restview, if missing
 	restview -e "$(PYTHON) setup.py --long-description"
 
+.PHONY: test check
+test check:
+	@echo "Sure would be nice to have some tests ..."
+
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py sdist

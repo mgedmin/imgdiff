@@ -119,67 +119,105 @@ def main():
     elif os.path.isdir(file1):
         file1 = os.path.join(file1, os.path.basename(file2))
 
-    img1 = Image.open(file1).convert("RGBA")
-    img2 = Image.open(file2).convert("RGBA")
+    img1 = Image.open(file1).convert("RGB")
+    img2 = Image.open(file2).convert("RGB")
 
+    if opts.highlight:
+        mask1, mask2 = best_diff(img1, img2, bgcolor)
+    else:
+        mask1 = mask2 = None
+
+    img = tile_images(img1, img2, bgcolor, separator_color,
+                      separator, opts.orientation, mask1, mask2)
+
+    if opts.outfile:
+        img.save(opts.outfile)
+    elif opts.viewer == 'builtin':
+        img.show()
+    else:
+        name = '%s-vs-%s.png' % (os.path.basename(file1),
+                                 os.path.basename(file2))
+        spawn_viewer(opts.viewer, img, name, grace=opts.grace)
+
+
+def pick_orientation(img1, img2, separator):
+    """Pick a tiling orientation for two images.
+
+    Returns either 'lr' for left-and-right, or 'tb' for top-and-bottom.
+
+    Picks the one that makes the combined image have a better aspect
+    ratio, where 'better' is defined 'closer to 1:1'.
+    """
     w1, h1 = img1.size
     w2, h2 = img2.size
 
-    # there are two possible tilings; pick one that's closer in shape to
-    # a square
     size_a = (w1 + separator + w2, max(h1, h2, 1))
     size_b = (max(w1, w2, 1), h1 + separator + h2)
 
-    if opts.orientation == 'auto':
-        aspect_a = max(size_a) / min(size_a)  # this way it's >= 1
-        aspect_b = max(size_b) / min(size_b)  # ditto
-        vsplit = (aspect_a < aspect_b)
-    else:
-        vsplit = (opts.orientation == 'lr')
+    aspect_a = max(size_a) / min(size_a)  # this way it's >= 1
+    aspect_b = max(size_b) / min(size_b)  # ditto
 
-    if vsplit:
-        size = size_a
+    # Hm, maybe we should be going for the golden ratio instead?
+
+    return 'lr' if aspect_a < aspect_b else 'tb'
+
+
+def tile_images(img1, img2, bgcolor, separator_color, separator, orientation,
+                mask1, mask2):
+    """Combine two images into a one.
+
+    Fills unused areas with ``bgcolor``.
+
+    Puts a ``separator``-wide bar with a thin line of ``separator_color``
+    color between them.
+
+    ``orientation`` is either 'lr' for left-and-right, or 'tb' for
+    top-and-bottom, or 'auto' for automatic.
+
+    ``mask1`` and ``mask2`` provide masks for alpha-blending.
+    """
+    w1, h1 = img1.size
+    w2, h2 = img2.size
+
+    if orientation == 'auto':
+        orientation = pick_orientation(img1, img2, separator)
+
+    if orientation == 'lr':
+        size = (w1 + separator + w2, max(h1, h2, 1))
         pos1 = (0, 0)
         pos2 = (w1 + separator, 0)
         separator_line = [(w1+separator//2, 0), (w1+separator//2, size[1])]
     else:
-        size = size_b
+        size = (max(w1, w2, 1), h1 + separator + h2)
         pos1 = (0, 0)
         pos2 = (0, h1 + separator)
         separator_line = [(0, h1+separator//2), (size[0], h1+separator//2)]
 
     img = Image.new('RGBA', size, bgcolor)
 
-    if opts.highlight:
-        diff1, diff2 = best_diff(img1, img2, bgcolor)
-        img.paste(img1, pos1, diff1)
-        img.paste(img2, pos2, diff2)
-    else:
-        img.paste(img1, pos1)
-        img.paste(img2, pos2)
+    img.paste(img1, pos1, mask1)
+    img.paste(img2, pos2, mask2)
 
     ImageDraw.Draw(img).line(separator_line, fill=separator_color)
-    if opts.outfile:
-        img.save(opts.outfile)
-    elif opts.viewer == 'builtin':
-        img.show()
-    else:
-        tempdir = tempfile.mkdtemp('imgdiff')
-        try:
-            imgfile = os.path.join(tempdir,
-                                   os.path.basename(file1) + '-vs-'
-                                    + os.path.basename(file2) + '.png')
-            img.save(imgfile)
-            started = time.time()
-            subprocess.call([opts.viewer, imgfile])
-            # program exitted too quickly, I think it forked and so may not
-            # have had enough time to even start looking for the temp file
-            # we just created
-            elapsed = time.time() - started
-            if elapsed < opts.grace:
-                time.sleep(opts.grace - elapsed)
-        finally:
-            shutil.rmtree(tempdir)
+
+    return img
+
+
+def spawn_viewer(viewer, img, filename, grace):
+    tempdir = tempfile.mkdtemp('imgdiff')
+    try:
+        imgfile = os.path.join(tempdir, filename)
+        img.save(imgfile)
+        started = time.time()
+        subprocess.call([viewer, imgfile])
+        # program exited too quickly, I think it forked and so may not
+        # have had enough time to even start looking for the temp file
+        # we just created
+        elapsed = time.time() - started
+        if elapsed < grace:
+            time.sleep(grace - elapsed)
+    finally:
+        shutil.rmtree(tempdir)
 
 
 def diff(img1, img2, (x1, y1), (x2, y2)):
@@ -215,8 +253,7 @@ def best_diff(img1, img2, bgcolor):
     pimg1.paste(img1, (0, 0))
     pimg2.paste(img2, (0, 0))
 
-    diff1 = Image.new('L', (W, H), 255)
-    diff2 = Image.new('L', (W, H), 255)
+    diff = Image.new('L', (W, H), 255)
 
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1

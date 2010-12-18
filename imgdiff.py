@@ -121,10 +121,6 @@ def main():
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
-    separator = opts.spacing
-    bgcolor = opts.bgcolor
-    separator_color = opts.sepcolor
-
     file1, file2 = args
 
     if os.path.isdir(file1) and os.path.isdir(file2):
@@ -138,7 +134,7 @@ def main():
     img2 = Image.open(file2).convert("RGB")
 
     if opts.highlight:
-        mask1, mask2 = best_diff(img1, img2, bgcolor)
+        mask1, mask2 = best_diff(img1, img2, opts.bgcolor)
     else:
         mask1 = mask2 = None
 

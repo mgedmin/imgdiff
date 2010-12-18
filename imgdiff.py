@@ -16,9 +16,9 @@ import unittest
 
 # There are two ways PIL is packaged
 try:
-    from PIL import Image, ImageDraw, ImageChops, ImageOps, ImageFilter
+    from PIL import Image, ImageDraw, ImageChops, ImageFilter
 except ImportError:
-    import Image, ImageDraw, ImageChops, ImageOps, ImageFilter
+    import Image, ImageDraw, ImageChops, ImageFilter
 
 
 __version__ = "1.4.0dev"
@@ -60,7 +60,7 @@ def parse_color(color):
 def check_color(option, opt, value):
     try:
         return parse_color(value)
-    except ValueError, e:
+    except ValueError:
         raise optparse.OptionValueError("option %s: invalid color value: %r"
                                          % (opt, value))
 
@@ -87,7 +87,9 @@ def main():
                            ' when using an external viewer (default: %default)')
 
     parser.add_option('-H', '--highlight', action='store_true',
-                      help='highlight differences (EXPERIMENTAL, slow)')
+                      help='highlight differences (EXPERIMENTAL)')
+    parser.add_option('-S', '--smart-highlight', action='store_true',
+                      help='highlight differences in a smarter way (EXPERIMENTAL, SLOW)')
 
     parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
@@ -132,8 +134,10 @@ def main():
     img1 = Image.open(file1).convert("RGB")
     img2 = Image.open(file2).convert("RGB")
 
-    if opts.highlight:
-        mask1, mask2 = best_diff(img1, img2, opts.bgcolor)
+    if opts.smart_highlight:
+        mask1, mask2 = slow_highlight(img1, img2, opts)
+    elif opts.highlight:
+        mask1, mask2 = simple_highlight(img1, img2, opts)
     else:
         mask1 = mask2 = None
 
@@ -155,7 +159,7 @@ def pick_orientation(img1, img2, spacing, desired_aspect=1.618):
     Returns either 'lr' for left-and-right, or 'tb' for top-and-bottom.
 
     Picks the one that makes the combined image have a better aspect
-    ratio, where 'better' is defined 'closer to 1:1.618'.
+    ratio, where 'better' is defined as 'closer to 1:1.618'.
     """
     w1, h1 = img1.size
     w2, h2 = img2.size
@@ -232,6 +236,11 @@ def spawn_viewer(viewer, img, filename, grace):
         shutil.rmtree(tempdir)
 
 
+def tweak_diff(diff):
+    diff = diff.point(lambda i: 64 + i * 2 // 3)
+    return diff
+
+
 def diff(img1, img2, (x1, y1), (x2, y2)):
     w1, h1 = img1.size
     w2, h2 = img2.size
@@ -242,25 +251,63 @@ def diff(img1, img2, (x1, y1), (x2, y2)):
     return diff
 
 
-def tweak_diff(diff):
-    diff = diff.point(lambda i: 64 + i * 2 // 3)
-    return diff
-
-
 def diff_badness(diff):
     # identical pictures = black image = return 0
     # completely different pictures = white image = return lots
     return sum(i * n for i, n in enumerate(diff.histogram()))
 
 
-def best_diff(img1, img2, bgcolor):
+def best_diff(img1, img2):
+    w1, h1 = img1.size
+    w2, h2 = img2.size
+    w, h = min(w1, w2), min(h1, h2)
+    best = None
+    best_value = 255 * w * h + 1
+    for x in range(abs(w1 - w2) + 1):
+        if w1 > w2:
+            x1, x2 = x, 0
+        else:
+            x1, x2 = 0, x
+        for y in range(abs(h1 - h2) + 1):
+            if h1 > h2:
+                y1, y2 = y, 0
+            else:
+                y1, y2 = 0, y
+            this = diff(img1, img2, (x1, y1), (x2, y2))
+            this_value = diff_badness(this)
+            if this_value < best_value:
+                best = this
+                best_value = this_value
+                best_pos = (x1, y1), (x2, y2)
+    return best, best_pos
 
+
+def simple_highlight(img1, img2, opts):
+    """Try to align the two images to minimize pixel differences.
+
+    Produces two masks for img1 and img2.
+    """
+    diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
+    diff = tweak_diff(diff)
+    diff = diff.filter(ImageFilter.MaxFilter(9))
+    mask1 = Image.new('L', img1.size)
+    mask2 = Image.new('L', img2.size)
+    mask1.paste(diff, (x1, y1))
+    mask2.paste(diff, (x2, y2))
+    return mask1, mask2
+
+
+def slow_highlight(img1, img2, opts):
+    """Try to find similar areas between two images.
+
+    Produces two masks for img1 and img2.
+    """
     w1, h1 = img1.size
     w2, h2 = img2.size
     W, H = max(w1, w2), max(h1, h2)
 
-    pimg1 = Image.new('RGB', (W, H), bgcolor)
-    pimg2 = Image.new('RGB', (W, H), bgcolor)
+    pimg1 = Image.new('RGB', (W, H), opts.bgcolor)
+    pimg2 = Image.new('RGB', (W, H), opts.bgcolor)
 
     pimg1.paste(img1, (0, 0))
     pimg2.paste(img2, (0, 0))

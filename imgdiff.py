@@ -111,6 +111,10 @@ def main():
         parser.error(e)
 
     file1, file2 = args
+
+    if os.path.isdir(file2):
+        file2 = os.path.join(file2, os.path.basename(file1))
+
     img1 = Image.open(file1).convert("RGBA")
     img2 = Image.open(file2).convert("RGBA")
 

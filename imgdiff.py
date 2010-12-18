@@ -112,8 +112,12 @@ def main():
 
     file1, file2 = args
 
+    if os.path.isdir(file1) and os.path.isdir(file2):
+        parser.error('at least one argument must be a file, not a directory')
     if os.path.isdir(file2):
         file2 = os.path.join(file2, os.path.basename(file1))
+    elif os.path.isdir(file1):
+        file1 = os.path.join(file1, os.path.basename(file2))
 
     img1 = Image.open(file1).convert("RGBA")
     img2 = Image.open(file2).convert("RGBA")

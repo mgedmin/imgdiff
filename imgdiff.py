@@ -24,7 +24,6 @@ except ImportError:
 __version__ = "1.4.0dev"
 
 
-
 def parse_color(color):
     """Parse a color constant.
 
@@ -150,13 +149,13 @@ def main():
         spawn_viewer(opts.viewer, img, name, grace=opts.grace)
 
 
-def pick_orientation(img1, img2, spacing):
+def pick_orientation(img1, img2, spacing, desired_aspect=1.618):
     """Pick a tiling orientation for two images.
 
     Returns either 'lr' for left-and-right, or 'tb' for top-and-bottom.
 
     Picks the one that makes the combined image have a better aspect
-    ratio, where 'better' is defined 'closer to 1:1'.
+    ratio, where 'better' is defined 'closer to 1:1.618'.
     """
     w1, h1 = img1.size
     w2, h2 = img2.size
@@ -164,12 +163,13 @@ def pick_orientation(img1, img2, spacing):
     size_a = (w1 + spacing + w2, max(h1, h2, 1))
     size_b = (max(w1, w2, 1), h1 + spacing + h2)
 
-    aspect_a = max(size_a) / min(size_a)  # this way it's >= 1
-    aspect_b = max(size_b) / min(size_b)  # ditto
+    aspect_a = size_a[0] / size_a[1]
+    aspect_b = size_b[0] / size_b[1]
 
-    # Hm, maybe we should be going for the golden ratio instead?
+    goodness_a = min(desired_aspect, aspect_a) / max(desired_aspect, aspect_a)
+    goodness_b = min(desired_aspect, aspect_b) / max(desired_aspect, aspect_b)
 
-    return 'lr' if aspect_a < aspect_b else 'tb'
+    return 'lr' if goodness_a >= goodness_b else 'tb'
 
 
 def tile_images(img1, img2, mask1, mask2, opts):

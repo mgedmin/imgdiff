@@ -22,7 +22,7 @@ Command-Line Help
 
 ::
 
-    Usage: imgdiff.py image1 image2
+    Usage: imgdiff image1 image2
 
     Compare two images side-by-side
 

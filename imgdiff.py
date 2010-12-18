@@ -457,8 +457,19 @@ def slow_highlight(img1, img2, opts):
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1
 
+    start = time.time()
+    iterations = 0
+    total = xr * yr
+    progress = False
     for x in range(xr):
         for y in range(yr):
+            iterations += 1
+            if time.time() - start > 1.0:
+                progress = True
+                sys.stdout.write('\r%d%% (%d out of %d possible alignments)'
+                                 % (iterations * 100 // total, iterations,
+                                    total))
+                sys.stdout.flush()
             this = ImageChops.difference(pimg1, pimg2).convert('L')
             this = this.filter(ImageFilter.MaxFilter(7))
             diff = ImageChops.darker(diff, this)
@@ -474,6 +485,9 @@ def slow_highlight(img1, img2, opts):
             pimg2 = ImageChops.offset(pimg2, 1, 0)
         else:
             pimg1 = ImageChops.offset(pimg1, 1, 0)
+
+    if progress:
+        print
 
     diff = diff.filter(ImageFilter.MaxFilter(5))
 

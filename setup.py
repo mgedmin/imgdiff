@@ -26,7 +26,7 @@ def get_version():
 
 
 def get_description():
-    return read('README.txt')
+    return read('README.txt') + '\n\n\n' + read('CHANGES.txt')
 
 
 setup(name='imgdiff',

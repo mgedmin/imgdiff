@@ -26,7 +26,11 @@ def get_version():
 
 
 def get_description():
-    return read('README.txt') + '\n\n\n' + read('CHANGES.txt')
+    readme = read('README.txt')
+    readme = readme.replace('example.png',
+                            'http://packages.python.org/imgdiff/example.png')
+    changelog = read('CHANGES.txt')
+    return readme + '\n\n\n' + changelog
 
 
 setup(name='imgdiff',

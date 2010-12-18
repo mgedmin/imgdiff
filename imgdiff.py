@@ -275,6 +275,66 @@ def tweak_diff(diff, opacity):
 
 
 def diff(img1, img2, (x1, y1), (x2, y2)):
+    """Compare two images with given alignments.
+
+    Returns a difference map.
+
+    ``(x1, y1)`` specify the top-left corner of the aligned area with respect
+    to ``img1``.
+
+    ``(x2, y2)`` specify the top-left corner of the aligned area with respect
+    to ``img2``.
+
+    Either ``x1`` or ``x2`` must be 0, depending on whether ``img1`` is
+    narrower or wider than ``img2``.  Both must be 0 if the two images
+    have the same width.
+
+    Either ``y1`` or ``y2`` must be 0, depending on whether ``img2`` is
+    shorter or taller than ``img2``.  Both must be 0 if the two images
+    have the same height.
+
+    Suppose ``img1`` is bigger than ``img2``::
+
+        +----------------------------------+
+        | img1     ^                       |
+        |          | y1                    |
+        |          v                       |
+        |      +------------------------+  |
+        |      | img2                   |  |
+        |<---->|                        |  |
+        |  x1  |                        |  |
+        |      +------------------------+  |
+        +----------------------------------+
+
+    In this case ``x2`` and ``y2`` are zero, ``0 <= x1 <= (w1 - w2)``, and
+    ``0 <= y1 <= (h1 - h2)``, where ``(w1, h1) == img1.size`` and
+    ``(w2, h2) == img2.size``.
+
+    If ``img2`` is smaller than ``img1``, just swap the labels in the
+    description above.
+
+    Suppose ``img1`` is wider but shorter than ``img2``::
+
+               +------------------------+
+               | img2     ^             |
+               |          | y2          |
+               |          v             |
+        +------|------------------------|--+
+        | img1 |                        |  |
+        |      |                        |  |
+        |<---->|                        |  |
+        |  x1  |                        |  |
+        |      |                        |  |
+        +------|------------------------|--+
+               +------------------------+
+
+    In this case ``x2`` and ``y1`` are zero, ``0 <= x1 <= (w1 - w2)``, and
+    ``0 <= y2 <= (h2 - h1)``, where ``(w1, h1) == img1.size`` and
+    ``(w2, h2) == img2.size``.
+
+    If ``img1`` is narrower but taller than ``img2``, just swap the labels
+    in the description above.
+    """
     w1, h1 = img1.size
     w2, h2 = img2.size
     w, h = min(w1, w2), min(h1, h2)
@@ -285,12 +345,29 @@ def diff(img1, img2, (x1, y1), (x2, y2)):
 
 
 def diff_badness(diff):
+    """Estimate the "badness" value of a difference map.
+
+    Returns 0 if the pictures are identical
+
+    Returns a large number if the pictures are completely different
+    (e.g. a black field and a white field).  More specifically, returns
+    ``255 * width * height`` where ``(width, height) == diff.size``.
+
+    Returns something in between for other situations.
+    """
     # identical pictures = black image = return 0
     # completely different pictures = white image = return lots
     return sum(i * n for i, n in enumerate(diff.histogram()))
 
 
 def best_diff(img1, img2):
+    """Find the best alignment of two images that minimizes the differences.
+
+    Returns (diff, alignments) where ``diff`` is a difference map, and
+    ``alignments`` is a tuple ((x1, y2), (x2, y2)).
+
+    See ``diff()`` for the description of the alignment numbers.
+    """
     w1, h1 = img1.size
     w2, h2 = img2.size
     w, h = min(w1, w2), min(h1, h2)
@@ -373,6 +450,9 @@ def slow_highlight(img1, img2, opts):
     pimg2.paste(img2, (0, 0))
 
     diff = Image.new('L', (W, H), 255)
+    # It is not a good idea to keep one diff image; it should track the
+    # relative positions of the two images.  I think that's what explains
+    # the fuzz I see near the edges of the different areas.
 
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1

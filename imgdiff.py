@@ -91,6 +91,8 @@ def main():
                       help='background color (default: %default)')
     parser.add_option('--sepcolor', default='ccc',
                       help='separator line color (default: %default)')
+    parser.add_option('--spacing', type='int', default=3,
+                      help='spacing between images (default: %default)')
 
     parser.add_option('--selftest', action='store_true',
                       help='run unit tests')
@@ -104,7 +106,7 @@ def main():
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
-    separator = 3
+    separator = opts.spacing
     bgcolor = parse_color(opts.bgcolor)
     separator_color = parse_color(opts.sepcolor)
 

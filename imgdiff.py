@@ -9,6 +9,7 @@ import optparse
 import shutil
 import subprocess
 import tempfile
+import time
 
 # There are two ways PIL is packaged
 try:
@@ -25,6 +26,8 @@ def main():
                 description='Compare two images side-by-side')
     parser.add_option('--viewer', default='builtin',
                       help='use an external program to view an image')
+    parser.add_option('--grace', type='int', default=1.0,
+                      help='seconds to wait before removing temporary file')
     parser.add_option('--lr', '--left-right', action='store_const', const='lr',
                       dest='orientation', default='auto',
                       help='force orientation to left-and-right')
@@ -80,7 +83,14 @@ def main():
                                    os.path.basename(file1) + '-vs-'
                                     + os.path.basename(file2) + '.png')
             img.save(imgfile)
+            started = time.time()
             subprocess.call([opts.viewer, imgfile])
+            # program exitted too quickly, I think it forked and so may not
+            # have had enough time to even start looking for the temp file
+            # we just created
+            elapsed = time.time() - started
+            if elapsed < opts.grace:
+                time.sleep(opts.grace - elapsed)
         finally:
             shutil.rmtree(tempdir)
     else:

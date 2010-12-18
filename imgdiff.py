@@ -38,7 +38,7 @@ def parse_color(color):
 
     """
     if len(color) not in (3, 4, 6, 8):
-        raise ValueError('bad color: %s; expected rgb/rgba/rrggbb/rrggbbaa'
+        raise ValueError('bad color %r; expected rgb/rgba/rrggbb/rrggbbaa'
                           % color)
     if len(color) in (3, 4):
         r = int(color[0], 16) * 0x11
@@ -103,9 +103,12 @@ def main():
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
-    separator = opts.spacing
-    bgcolor = parse_color(opts.bgcolor)
-    separator_color = parse_color(opts.sepcolor)
+    try:
+        separator = opts.spacing
+        bgcolor = parse_color(opts.bgcolor)
+        separator_color = parse_color(opts.sepcolor)
+    except ValueError, e:
+        parser.error(e)
 
     file1, file2 = args
     img1 = Image.open(file1).convert("RGBA")

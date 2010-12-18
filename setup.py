@@ -43,7 +43,13 @@ setup(name='imgdiff',
 
       """,
       classifiers=[
+          'Development Status :: 4 - Beta',
+          'Intended Audience :: Developers',
+          'Intended Audience :: End Users/Desktop',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
           'Programming Language :: Python :: 2',
+          'Topic :: Multimedia :: Graphics',
       ],
       py_modules=['imgdiff'],
       zip_safe=False,

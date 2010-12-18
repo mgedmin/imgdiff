@@ -87,8 +87,10 @@ def main():
                       dest='orientation',
                       help='force orientation to top-and-bottom')
 
-    parser.add_option('--bgcolor', default='fff', dest='bgcolor',
+    parser.add_option('--bgcolor', default='fff',
                       help='background color (default: %default)')
+    parser.add_option('--sepcolor', default='ccc',
+                      help='separator line color (default: %default)')
 
     parser.add_option('--selftest', action='store_true',
                       help='run unit tests')
@@ -104,7 +106,7 @@ def main():
 
     separator = 3
     bgcolor = parse_color(opts.bgcolor)
-    separator_color = (0xcc, 0xcc, 0xcc, 0xff)
+    separator_color = parse_color(opts.sepcolor)
 
     file1, file2 = args
     img1 = Image.open(file1).convert("RGBA")

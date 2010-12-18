@@ -293,8 +293,8 @@ def simple_highlight(img1, img2, opts):
     diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
     diff = tweak_diff(diff, opts.opacity)
     diff = diff.filter(ImageFilter.MaxFilter(9))
-    mask1 = Image.new('L', img1.size, opts.opacity)
-    mask2 = Image.new('L', img2.size, opts.opacity)
+    mask1 = Image.new('L', img1.size, 0xff)
+    mask2 = Image.new('L', img2.size, 0xff)
     mask1.paste(diff, (x1, y1))
     mask2.paste(diff, (x2, y2))
     return mask1, mask2

@@ -51,6 +51,7 @@ setup(name='imgdiff',
           'Topic :: Multimedia :: Graphics',
       ],
       py_modules=['imgdiff'],
+      test_suite='imgdiff.test_suite',
       zip_safe=False,
       install_requires=['PIL'],
       entry_points="""

@@ -14,7 +14,7 @@ preview-pypi-description:
 
 .PHONY: test check
 test check:
-	@echo "Sure would be nice to have some tests ..."
+	$(PYTHON) imgdiff.py --selftest
 
 .PHONY: docs
 docs:

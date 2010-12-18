@@ -5,11 +5,14 @@ imgdiff by Marius Gedminas <marius@gedmin.as>
 Released under the MIT licence.
 """
 import os
+import sys
 import optparse
 import shutil
 import subprocess
 import tempfile
 import time
+import doctest
+import unittest
 
 # There are two ways PIL is packaged
 try:
@@ -24,14 +27,14 @@ __version__ = "1.4.0dev"
 def parse_color(color):
     """Parse a color constant.
 
-        >>> parse_color('4bf')
-        (0x44, 0xbb, 0xff, 0xff)
-        >>> parse_color('ccce')
-        (0xcc, 0xcc, 0xcc, 0xee)
-        >>> parse_color('d8b4a2')
-        (0xd8, 0xb4, 0xa2, 0xff)
-        >>> parse_color('12345678')
-        (0x12, 0x34, 0x56, 0x78)
+        >>> parse_color('4bf') == (0x44, 0xbb, 0xff, 0xff)
+        True
+        >>> parse_color('ccce') == (0xcc, 0xcc, 0xcc, 0xee)
+        True
+        >>> parse_color('d8b4a2') == (0xd8, 0xb4, 0xa2, 0xff)
+        True
+        >>> parse_color('12345678') == (0x12, 0x34, 0x56, 0x78)
+        True
 
     """
     if len(color) not in (3, 4, 6, 8):
@@ -87,7 +90,15 @@ def main():
     parser.add_option('--bgcolor', default='fff', dest='bgcolor',
                       help='background color (default: %default)')
 
+    parser.add_option('--selftest', action='store_true',
+                      help='run unit tests')
+
     opts, args = parser.parse_args()
+
+    if opts.selftest:
+        sys.argv[1:] = args
+        run_tests() # calls sys.exit()
+
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
@@ -221,6 +232,14 @@ def best_diff(img1, img2, bgcolor):
     diff1 = diff.crop((0, 0, w1, h1))
     diff2 = diff.crop((0, 0, w2, h2))
     return tweak_diff(diff1), tweak_diff(diff2)
+
+
+def test_suite():
+    return doctest.DocTestSuite()
+
+
+def run_tests():
+    unittest.main(defaultTest='test_suite')
 
 
 if __name__ == '__main__':

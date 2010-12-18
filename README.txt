@@ -39,6 +39,16 @@ Command-Line Help
       --tb, --top-bottom  force orientation to top-and-bottom
 
 
+Output Example
+---------------
+
+.. figure:: example.png
+   :alt: example output
+
+Here the images are wide and short, so imgdiff decided to put them one above
+the other.
+
+
 Support and Development
 -----------------------
 

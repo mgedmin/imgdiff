@@ -183,17 +183,17 @@ def tile_images(img1, img2, bgcolor, separator_color, separator, orientation,
         orientation = pick_orientation(img1, img2, separator)
 
     if orientation == 'lr':
-        size = (w1 + separator + w2, max(h1, h2, 1))
-        pos1 = (0, 0)
-        pos2 = (w1 + separator, 0)
-        separator_line = [(w1+separator//2, 0), (w1+separator//2, size[1])]
+        w, h = (w1 + separator + w2, max(h1, h2, 1))
+        pos1 = (0, (h - h1) // 2)
+        pos2 = (w1 + separator, (h - h2) // 2)
+        separator_line = [(w1+separator//2, 0), (w1+separator//2, h)]
     else:
-        size = (max(w1, w2, 1), h1 + separator + h2)
-        pos1 = (0, 0)
-        pos2 = (0, h1 + separator)
-        separator_line = [(0, h1+separator//2), (size[0], h1+separator//2)]
+        w, h = (max(w1, w2, 1), h1 + separator + h2)
+        pos1 = ((w - w1) // 2, 0)
+        pos2 = ((w - w2) // 2, h1 + separator)
+        separator_line = [(0, h1+separator//2), (w, h1+separator//2)]
 
-    img = Image.new('RGBA', size, bgcolor)
+    img = Image.new('RGBA', (w, h), bgcolor)
 
     img.paste(img1, pos1, mask1)
     img.paste(img2, pos2, mask2)

@@ -89,7 +89,9 @@ def main():
     parser.add_option('-H', '--highlight', action='store_true',
                       help='highlight differences (EXPERIMENTAL)')
     parser.add_option('-S', '--smart-highlight', action='store_true',
-                      help='highlight differences in a smarter way (EXPERIMENTAL, SLOW)')
+                      help='highlight differences in a smarter way (EXPERIMENTAL)')
+    parser.add_option('--opacity', type='int', default='64',
+                      help='minimum opacity for highlighting (default %default)')
 
     parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
@@ -236,9 +238,10 @@ def spawn_viewer(viewer, img, filename, grace):
         shutil.rmtree(tempdir)
 
 
-def tweak_diff(diff):
-    diff = diff.point(lambda i: 64 + i * 2 // 3)
-    return diff
+def tweak_diff(diff, opacity):
+    # map 0..255 to opacity..255
+    mask = diff.point(lambda i: opacity + i * (255 - opacity) // 255)
+    return mask
 
 
 def diff(img1, img2, (x1, y1), (x2, y2)):
@@ -288,7 +291,7 @@ def simple_highlight(img1, img2, opts):
     Produces two masks for img1 and img2.
     """
     diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
-    diff = tweak_diff(diff)
+    diff = tweak_diff(diff, opts.opacity)
     diff = diff.filter(ImageFilter.MaxFilter(9))
     mask1 = Image.new('L', img1.size)
     mask2 = Image.new('L', img2.size)
@@ -339,7 +342,11 @@ def slow_highlight(img1, img2, opts):
 
     diff1 = diff.crop((0, 0, w1, h1))
     diff2 = diff.crop((0, 0, w2, h2))
-    return tweak_diff(diff1), tweak_diff(diff2)
+
+    mask1 = tweak_diff(diff1, opts.opacity)
+    mask2 = tweak_diff(diff2, opts.opacity)
+
+    return mask1, mask2
 
 
 def test_suite():

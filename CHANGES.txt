@@ -1,7 +1,7 @@
 Changes
 =======
 
-1.4.0 (unreleased)
+1.4.0 (2010-12-19)
 ------------------
 
 - Accepts directory names: ``imgdiff dir1/img.png dir2/``.

@@ -21,7 +21,7 @@ except ImportError:
     import Image, ImageDraw, ImageChops, ImageFilter
 
 
-__version__ = "1.4.0dev"
+__version__ = "1.4.0"
 
 
 def parse_color(color):

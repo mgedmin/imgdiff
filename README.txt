@@ -9,6 +9,10 @@ You could use it with a version control tool, e.g. ::
 
   bzr diff *.png --using=imgdiff
 
+or ::
+
+  bzr diff *.png --using='imgdiff --eog -H'
+
 
 Installation
 ------------
@@ -27,26 +31,43 @@ Command-Line Help
     Compare two images side-by-side
 
     Options:
-      -h, --help          show this help message and exit
-      -o OUTFILE          write the combined image to a file instead of showing it
-      --viewer=VIEWER     use an external program to view an image instead using
-                          the builtin viewer
-      --grace=GRACE       seconds to wait before removing temporary file when
-                          using an external viewer, in case it forks into
-                          background
-      --auto              pick orientation automatically (default)
-      --lr, --left-right  force orientation to left-and-right
-      --tb, --top-bottom  force orientation to top-and-bottom
+      -h, --help            show this help message and exit
+      -o OUTFILE            write the combined image to a file
+      --viewer=COMMAND      use an external image viewer (default: builtin)
+      --eog                 use Eye of Gnome (same as --viewer eog)
+      --grace=SECONDS       seconds to wait before removing temporary file when
+                            using an external viewer (default: 1.0)
+      -H, --highlight       highlight differences (EXPERIMENTAL)
+      -S, --smart-highlight
+                            highlight differences in a smarter way (EXPERIMENTAL)
+      --opacity=OPACITY     minimum opacity for highlighting (default 64)
+      --auto                pick orientation automatically (default)
+      --lr, --left-right    force orientation to left-and-right
+      --tb, --top-bottom    force orientation to top-and-bottom
+      --bgcolor=RGB         background color (default: fff)
+      --sepcolor=RGB        separator line color (default: ccc)
+      --spacing=N           spacing between images (default: 3 pixels)
+      --border=N            border around images (default: 0 pixels)
+      --selftest            run unit tests
 
 
 Output Example
 ---------------
 
-.. figure:: example.png
-   :alt: example output
+.. figure:: example1.png
+   :alt: example output #1
 
 Here the images are wide and short, so imgdiff decided to put them one above
 the other.
+
+.. figure:: example2.png
+   :alt: example output #2
+
+A similar example, with ``--highlight`` enabled.  You can see that it doesn't
+always work very well, although it can produce nice results in simpler cases:
+
+.. figure:: example3.png
+   :alt: example output #3
 
 
 Support and Development

@@ -55,19 +55,19 @@ Output Example
 ---------------
 
 .. figure:: example1.png
-   :alt: example output #1
+   :alt: example #1
 
 Here the images are wide and short, so imgdiff decided to put them one above
 the other.
 
 .. figure:: example2.png
-   :alt: example output #2
+   :alt: example #2
 
 A similar example, with ``--highlight`` enabled.  You can see that it doesn't
 always work very well, although it can produce nice results in simpler cases:
 
 .. figure:: example3.png
-   :alt: example output #3
+   :alt: example #3
 
 
 Support and Development

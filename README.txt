@@ -21,10 +21,10 @@ Installation
 <http://pypi.python.org/pypi/imgdiff>`_.
 
 
-Command-Line Help
------------------
+Usage
+-----
 
-::
+Run ``imgdiff --help`` to see this help message::
 
     Usage: imgdiff image1 image2
 
@@ -51,8 +51,12 @@ Command-Line Help
       --selftest            run unit tests
 
 
-Output Example
+Output Examples
 ---------------
+
+First example::
+
+    imgdiff set1/42.png set3/
 
 .. figure:: example1.png
    :alt: example #1
@@ -60,11 +64,17 @@ Output Example
 Here the images are wide and short, so imgdiff decided to put them one above
 the other.
 
+Same example, with highlighting enabled::
+
+    imgdiff set1/42.png set3/ -H
+
 .. figure:: example2.png
    :alt: example #2
 
-A similar example, with ``--highlight`` enabled.  You can see that it doesn't
-always work very well, although it can produce nice results in simpler cases:
+You can see that it doesn't work very well, although it can produce nice
+results in simpler cases::
+
+    imgdiff set1/42.png set2/ -H
 
 .. figure:: example3.png
    :alt: example #3

@@ -4,8 +4,7 @@ Changes
 1.4.0 (unreleased)
 ------------------
 
-- Accepts directory names: ``imgdiff dir1/img.png dir2/`` is equivalent
-  to ``imgdiff dir1/img.png dir2/img.png``.
+- Accepts directory names: ``imgdiff dir1/img.png dir2/``.
 
 - Centers images relative to each other if they have different width/height.
 

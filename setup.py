@@ -27,8 +27,8 @@ def get_version():
 
 def get_description():
     readme = read('README.txt')
-    readme = readme.replace('example.png',
-                            'http://packages.python.org/imgdiff/example.png')
+    readme = readme.replace('.. figure:: ',
+                            '.. figure:: http://packages.python.org/imgdiff/')
     changelog = read('CHANGES.txt')
     return readme + '\n\n\n' + changelog
 

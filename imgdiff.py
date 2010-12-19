@@ -360,6 +360,34 @@ def diff_badness(diff):
     return sum(i * n for i, n in enumerate(diff.histogram()))
 
 
+class Progress(object):
+
+    def __init__(self, total, delay=1.0, what='possible alignments'):
+        self.started = time.time()
+        self.delay = delay
+        self.total = total
+        self.what = what
+        self.position = 0
+        self.shown = False
+
+    def next(self):
+        self.position += 1
+        if time.time() - self.started > self.delay:
+            self.shown = True
+            sys.stdout.write('\r%d%% (%d out of %d %s)'
+                             % (self.position * 100 // self.total,
+                                self.position, self.total, self.what))
+            sys.stdout.flush()
+        if self.position == self.total:
+            self.done()
+
+    def done(self):
+        if self.shown:
+            sys.stdout.write('\n')
+            sys.stdout.flush()
+            self.shown = False
+
+
 def best_diff(img1, img2):
     """Find the best alignment of two images that minimizes the differences.
 
@@ -373,16 +401,22 @@ def best_diff(img1, img2):
     w, h = min(w1, w2), min(h1, h2)
     best = None
     best_value = 255 * w * h + 1
-    for x in range(abs(w1 - w2) + 1):
+
+    xr = abs(w1 - w2) + 1
+    yr = abs(h1 - h2) + 1
+
+    p = Progress(xr * yr)
+    for x in range(xr):
         if w1 > w2:
             x1, x2 = x, 0
         else:
             x1, x2 = 0, x
-        for y in range(abs(h1 - h2) + 1):
+        for y in range(yr):
             if h1 > h2:
                 y1, y2 = y, 0
             else:
                 y1, y2 = 0, y
+            p.next()
             this = diff(img1, img2, (x1, y1), (x2, y2))
             this_value = diff_badness(this)
             if this_value < best_value:
@@ -457,19 +491,10 @@ def slow_highlight(img1, img2, opts):
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1
 
-    start = time.time()
-    iterations = 0
-    total = xr * yr
-    progress = False
+    p = Progress(xr * yr)
     for x in range(xr):
         for y in range(yr):
-            iterations += 1
-            if time.time() - start > 1.0:
-                progress = True
-                sys.stdout.write('\r%d%% (%d out of %d possible alignments)'
-                                 % (iterations * 100 // total, iterations,
-                                    total))
-                sys.stdout.flush()
+            p.next()
             this = ImageChops.difference(pimg1, pimg2).convert('L')
             this = this.filter(ImageFilter.MaxFilter(7))
             diff = ImageChops.darker(diff, this)
@@ -485,9 +510,6 @@ def slow_highlight(img1, img2, opts):
             pimg2 = ImageChops.offset(pimg2, 1, 0)
         else:
             pimg1 = ImageChops.offset(pimg1, 1, 0)
-
-    if progress:
-        print
 
     diff = diff.filter(ImageFilter.MaxFilter(5))
 

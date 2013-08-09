@@ -83,9 +83,9 @@ results in simpler cases::
 Support and Development
 -----------------------
 
-The source code can be found in this Bazaar repository:
-https://code.launchpad.net/~mgedmin/imgdiff/trunk.
+The source code can be found in this Git repository:
+https://github.com/mgedmin/imgdiff.
 
-To check it out, use ``bzr branch lp:imgdiff``.
+To check it out, use ``git clone https://github.com/mgedmin/imgdiff``.
 
-Report bugs at https://bugs.launchpad.net/imgdiff.
+Report bugs at https://github.com/mgedmin/imgdiff/issues.

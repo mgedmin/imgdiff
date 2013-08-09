@@ -1,0 +1,7 @@
+dist/
+imgdiff.egg-info/
+build/
+temp/
+tmp/
+*.py[co]
+__pycache__/

@@ -1,6 +1,11 @@
 PYTHON = python
+
 FILE_WITH_VERSION = imgdiff.py
 FILE_WITH_CHANGELOG = CHANGES.txt
+VCS_STATUS = git status --porcelain
+VCS_EXPORT = git archive --format=tar --prefix=tmp/tree/ HEAD | tar -xf -
+VCS_TAG = git tag
+VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push && git push --tags
 
 
 .PHONY: default
@@ -31,13 +36,13 @@ dist:
 .PHONY: distcheck
 distcheck:
 	# Bit of a chicken-and-egg here, but if the tree is unclean, make
-	# distcheck will fail.  Thankfully bzr lets me uncommit.
-	@test -z "`bzr status 2>&1`" || { echo; echo "Your working tree is not clean" 1>&2; bzr status; exit 1; }
+	# distcheck will fail.
+	@test -z "`$(VCS_STATUS) 2>&1`" || { echo; echo "Your working tree is not clean" 1>&2; $(VCS_STATUS); exit 1; }
 	make dist
 	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
 	rm -rf tmp && \
 	mkdir tmp && \
-	bzr export tmp/tree && \
+	$(VCS_EXPORT) && \
 	cd tmp && \
 	tar xvzf ../dist/$$pkg_and_version.tar.gz && \
 	diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' && \
@@ -70,13 +75,13 @@ release: releasechecklist
 	# I'm chicken so I won't actually do these things yet
 	@echo "Run"
 	@echo
-	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
+	@echo "  $(PYTHON) setup.py sdist register upload && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo "  make docs"
 	@echo
 	@echo "Upload the build/docs.zip to http://pypi.python.org/pypi?:action=pkg_edit&name=imgdiff"
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
-	@echo '  bzr ci -m "Post-release version bump" && bzr push'
+	@echo '  $(VCS_COMMIT_AND_PUSH)'
 	@echo
 

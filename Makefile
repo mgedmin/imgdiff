@@ -1,7 +1,7 @@
 PYTHON = python
 
 FILE_WITH_VERSION = imgdiff.py
-FILE_WITH_CHANGELOG = CHANGES.txt
+FILE_WITH_CHANGELOG = CHANGES.rst
 VCS_STATUS = git status --porcelain
 VCS_EXPORT = git archive --format=tar --prefix=tmp/tree/ HEAD | tar -xf -
 VCS_TAG = git tag

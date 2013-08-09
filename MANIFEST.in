@@ -3,3 +3,4 @@ include Makefile
 include *.png
 include *.sh
 include set*/*.png
+include .gitignore

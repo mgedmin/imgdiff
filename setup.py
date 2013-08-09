@@ -53,7 +53,7 @@ setup(name='imgdiff',
       py_modules=['imgdiff'],
       test_suite='imgdiff.test_suite',
       zip_safe=False,
-      install_requires=['PIL'],
+      install_requires=['Pillow'],
       entry_points="""
           [console_scripts]
           imgdiff = imgdiff:main

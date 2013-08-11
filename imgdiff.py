@@ -83,7 +83,7 @@ class MyOption(optparse.Option):
 
 
 def main():
-    parser = optparse.OptionParser('%prog image1 image2',
+    parser = optparse.OptionParser('%prog [options] image1 image2',
                 description='Compare two images side-by-side',
                 option_class=MyOption)
 
@@ -103,6 +103,9 @@ def main():
                       help='highlight differences in a smarter way (EXPERIMENTAL)')
     parser.add_option('--opacity', type='int', default='64',
                       help='minimum opacity for highlighting (default %default)')
+    parser.add_option('--timeout', type='int', default='10',
+                      help='skip highlighting if it takes too long'
+                           ' (default: %default seconds)')
 
     parser.add_option('--auto', action='store_const', const='auto',
                       dest='orientation', default='auto',
@@ -360,31 +363,53 @@ def diff_badness(diff):
     return sum(i * n for i, n in enumerate(diff.histogram()))
 
 
+class Timeout(KeyboardInterrupt):
+    pass
+
+
 class Progress(object):
 
-    def __init__(self, total, delay=1.0, what='possible alignments'):
+    def __init__(self, total, delay=1.0, timeout=10.0, what='possible alignments'):
         self.started = time.time()
         self.delay = delay
         self.total = total
         self.what = what
         self.position = 0
         self.shown = False
+        self.timeout = timeout
+        self.stream = sys.stderr
+        self.isatty = self.stream.isatty()
+
+    def _say_if_terminal(self, msg):
+        if self.isatty:
+            self.stream.write('\r')
+            self.stream.write(msg)
+            self.stream.flush()
+            self.shown = True
+
+    def _say(self, msg):
+        if self.isatty:
+            self.stream.write('\r')
+        self.stream.write(msg)
+        self.stream.flush()
+        self.shown = True
 
     def next(self):
         self.position += 1
+        if self.timeout and time.time() - self.started > self.timeout:
+            self._say('Highlighting takes too long: timed out after %.0f seconds'
+                      % self.timeout)
+            raise Timeout
         if time.time() - self.started > self.delay:
-            self.shown = True
-            sys.stdout.write('\r%d%% (%d out of %d %s)'
-                             % (self.position * 100 // self.total,
-                                self.position, self.total, self.what))
-            sys.stdout.flush()
+            self._say_if_terminal('%d%% (%d out of %d %s)'
+                                  % (self.position * 100 // self.total,
+                                     self.position, self.total, self.what))
         if self.position == self.total:
             self.done()
 
     def done(self):
         if self.shown:
-            sys.stdout.write('\n')
-            sys.stdout.flush()
+            self._say('\n')
             self.shown = False
 
 
@@ -437,7 +462,10 @@ def simple_highlight(img1, img2, opts):
     different (e.g. text).
     """
 
-    diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
+    try:
+        diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
+    except KeyboardInterrupt:
+        return None, None
     diff = diff.filter(ImageFilter.MaxFilter(9))
     diff = tweak_diff(diff, opts.opacity)
     # If the images have different sizes, the areas outside the alignment
@@ -491,25 +519,28 @@ def slow_highlight(img1, img2, opts):
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1
 
-    p = Progress(xr * yr)
-    for x in range(xr):
-        for y in range(yr):
-            p.next()
-            this = ImageChops.difference(pimg1, pimg2).convert('L')
-            this = this.filter(ImageFilter.MaxFilter(7))
-            diff = ImageChops.darker(diff, this)
+    try:
+        p = Progress(xr * yr)
+        for x in range(xr):
+            for y in range(yr):
+                p.next()
+                this = ImageChops.difference(pimg1, pimg2).convert('L')
+                this = this.filter(ImageFilter.MaxFilter(7))
+                diff = ImageChops.darker(diff, this)
+                if h1 > h2:
+                    pimg2 = ImageChops.offset(pimg2, 0, 1)
+                else:
+                    pimg1 = ImageChops.offset(pimg1, 0, 1)
             if h1 > h2:
-                pimg2 = ImageChops.offset(pimg2, 0, 1)
+                pimg2 = ImageChops.offset(pimg2, 0, -yr)
             else:
-                pimg1 = ImageChops.offset(pimg1, 0, 1)
-        if h1 > h2:
-            pimg2 = ImageChops.offset(pimg2, 0, -yr)
-        else:
-            pimg1 = ImageChops.offset(pimg1, 0, -yr)
-        if w1 > w2:
-            pimg2 = ImageChops.offset(pimg2, 1, 0)
-        else:
-            pimg1 = ImageChops.offset(pimg1, 1, 0)
+                pimg1 = ImageChops.offset(pimg1, 0, -yr)
+            if w1 > w2:
+                pimg2 = ImageChops.offset(pimg2, 1, 0)
+            else:
+                pimg1 = ImageChops.offset(pimg1, 1, 0)
+    except KeyboardInterrupt:
+        return None, None
 
     diff = diff.filter(ImageFilter.MaxFilter(5))
 

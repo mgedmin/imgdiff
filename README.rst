@@ -26,7 +26,7 @@ Usage
 
 Run ``imgdiff --help`` to see this help message::
 
-    Usage: imgdiff image1 image2
+    Usage: imgdiff [options] image1 image2
 
     Compare two images side-by-side
 
@@ -41,6 +41,8 @@ Run ``imgdiff --help`` to see this help message::
       -S, --smart-highlight
                             highlight differences in a smarter way (EXPERIMENTAL)
       --opacity=OPACITY     minimum opacity for highlighting (default 64)
+      --timeout=TIMEOUT     skip highlighting if it takes too long (default: 10
+                            seconds)
       --auto                pick orientation automatically (default)
       --lr, --left-right    force orientation to left-and-right
       --tb, --top-bottom    force orientation to top-and-bottom

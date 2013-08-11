@@ -4,6 +4,12 @@ Changes
 1.4.2 (unreleased)
 ------------------
 
+- Suppress progress output if stderr is not a terminal.
+
+- Make it possible to abort --highligh/--smart-highlight logic by pressing ^C.
+
+- Abort --highlight/--smart-highlight logic if it takes longer than 10 seconds
+  (timeout changeable with --timeout; use 0 to turn it off).
 
 
 1.4.1 (2013-08-09)

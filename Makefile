@@ -18,8 +18,14 @@ preview-pypi-description:
 	restview -e "$(PYTHON) setup.py --long-description"
 
 .PHONY: test check
-test check:
+test:
 	$(PYTHON) imgdiff.py --selftest
+check:
+	detox
+
+.PHONY:
+coverage:
+	tox -e coverage
 
 .PHONY: docs
 docs:

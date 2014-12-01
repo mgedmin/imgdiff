@@ -77,6 +77,14 @@ class TestMain(unittest.TestCase):
         self.main('set1/canary.png', 'set2', '--viewer', 'true')
         self.main('set1', 'set2/canary.png', '--viewer', 'true', '--tb')
 
+    def test_different_size_images(self):
+        # tickle the unexplored branches in best_diff()
+        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-H', '--timeout=1')
+
+    def test_different_size_images_sloow(self):
+        # tickle the unexplored branches in slow_highlight()
+        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-S', '--timeout=1')
+
 
 class TestProgress(unittest.TestCase):
 

@@ -245,7 +245,7 @@ def spawn_viewer(viewer, img, filename, grace):
     before removing the temporary file.  Useful if your viewer forks
     into background before it opens the file.
     """
-    tempdir = tempfile.mkdtemp('imgdiff')
+    tempdir = tempfile.mkdtemp(prefix='imgdiff-')
     try:
         imgfile = os.path.join(tempdir, filename)
         img.save(imgfile)

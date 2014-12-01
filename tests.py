@@ -78,6 +78,41 @@ class TestMain(unittest.TestCase):
         self.main('set1', 'set2/canary.png', '--viewer', 'true', '--tb')
 
 
+class TestProgress(unittest.TestCase):
+
+    def test_terminal_output(self):
+        p = imgdiff.Progress(3, delay=0)
+        p.stream = StringIO()
+        p.isatty = True
+        for n in range(3):
+            p.next()
+        p.done()
+        self.assertEqual(p.stream.getvalue(),
+                         '\r33% (1 out of 3 possible alignments)'
+                         '\r66% (2 out of 3 possible alignments)'
+                         '\r100% (3 out of 3 possible alignments)'
+                         '\r\n')
+
+    def test_not_a_terminal(self):
+        p = imgdiff.Progress(3, delay=0)
+        p.stream = StringIO()
+        p.isatty = False
+        for n in range(3):
+            p.next()
+        p.done()
+        self.assertEqual(p.stream.getvalue(), '')
+
+    def test_timeout(self):
+        p = imgdiff.Progress(3, timeout=1)
+        p.stream = StringIO()
+        p.isatty = False
+        p.started -= 2  # so it seems we started a second ago
+        self.assertRaises(imgdiff.Timeout, p.next)
+        p.done()
+        self.assertEqual(p.stream.getvalue(),
+                         'Highlighting takes too long: timed out after 1 seconds\n')
+
+
 def test_suite():
     return unittest.TestSuite([
         doctest.DocTestSuite(imgdiff),

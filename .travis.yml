@@ -5,7 +5,7 @@ python:
 install:
     - travis_retry pip install coverage coveralls -e .
 script:
-    - coverage run --source=imgdiff.py imgdiff.py --selftest
+    - coverage run --source=imgdiff.py tests.py
 after_success:
     - coveralls
 notifications:

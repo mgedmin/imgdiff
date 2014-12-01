@@ -398,7 +398,7 @@ class Progress(object):
             self._say('Highlighting takes too long: timed out after %.0f seconds'
                       % self.timeout)
             raise Timeout
-        if time.time() - self.started > self.delay:
+        if time.time() - self.started >= self.delay:
             self._say_if_terminal('%d%% (%d out of %d %s)'
                                   % (self.position * 100 // self.total,
                                      self.position, self.total, self.what))

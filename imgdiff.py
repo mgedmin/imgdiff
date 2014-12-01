@@ -80,10 +80,15 @@ class MyOption(optparse.Option):
     TYPE_CHECKER["color"] = check_color
 
 
-def main():
+def main(argv=None):
+    prog = args = None
+    if argv is not None:
+        prog = os.path.basename(sys.argv[0])
+        args = argv[1:]
+
     parser = optparse.OptionParser('%prog [options] image1 image2',
                 description='Compare two images side-by-side',
-                option_class=MyOption)
+                option_class=MyOption, prog=prog)
 
     parser.add_option('-o', dest='outfile',
                       help='write the combined image to a file')
@@ -124,7 +129,7 @@ def main():
     parser.add_option('--border', type='int', default=0, metavar='N',
                       help='border around images (default: %default pixels)')
 
-    opts, args = parser.parse_args()
+    opts, args = parser.parse_args(args)
 
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))

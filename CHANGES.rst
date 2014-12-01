@@ -1,7 +1,7 @@
 Changes
 =======
 
-1.6.0 (unreleased)
+1.6.0 (2014-12-01)
 ------------------
 
 - Add Python 3 support.

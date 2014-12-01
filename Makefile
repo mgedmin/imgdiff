@@ -15,7 +15,7 @@ default:
 .PHONY: preview-pypi-description
 preview-pypi-description:
 	# pip install restview, if missing
-	restview -e "$(PYTHON) setup.py --long-description"
+	restview --long-description
 
 .PHONY: test check
 test:

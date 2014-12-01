@@ -84,7 +84,7 @@ release: releasechecklist
 	@echo "  $(PYTHON) setup.py sdist register upload && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo "  make docs"
 	@echo
-	@echo "Upload the build/docs.zip to http://pypi.python.org/pypi?:action=pkg_edit&name=imgdiff"
+	@echo "Upload the build/docs.zip to https://pypi.python.org/pypi?:action=pkg_edit&name=imgdiff"
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo

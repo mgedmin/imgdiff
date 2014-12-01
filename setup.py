@@ -28,7 +28,7 @@ def get_version():
 def get_description():
     readme = read('README.rst')
     readme = readme.replace('.. figure:: ',
-                            '.. figure:: http://packages.python.org/imgdiff/')
+                            '.. figure:: https://pythonhosted.org/imgdiff/')
     changelog = read('CHANGES.rst')
     return readme + '\n\n\n' + changelog
 
@@ -37,7 +37,7 @@ setup(name='imgdiff',
       version=get_version(),
       author='Marius Gedminas',
       author_email='marius@gedmin.as',
-      url='http://pypi.python.org/pypi/imgdiff/',
+      url='https://github.com/mgedmin/imgdiff',
       license='MIT',
       description='Present two images side-by-side for visual comparison',
       long_description=get_description(),

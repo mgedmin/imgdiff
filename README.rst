@@ -18,7 +18,7 @@ Installation
 ------------
 
 ``pip install imgdiff`` or `download it from PyPI
-<http://pypi.python.org/pypi/imgdiff>`_.
+<https://pypi.python.org/pypi/imgdiff>`_.
 
 
 Usage

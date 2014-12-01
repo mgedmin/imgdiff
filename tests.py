@@ -5,9 +5,9 @@ import sys
 import tempfile
 import unittest
 try:
-    from io import StringIO
-except ImportError:
     from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import mock
 

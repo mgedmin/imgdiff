@@ -273,16 +273,16 @@ def tweak_diff(diff, opacity):
     return mask
 
 
-def diff(img1, img2, (x1, y1), (x2, y2)):
+def diff(img1, img2, x1y1, x2y2):
     """Compare two images with given alignments.
 
     Returns a difference map.
 
-    ``(x1, y1)`` specify the top-left corner of the aligned area with respect
-    to ``img1``.
+    ``x1y1``: a tuple ``(x1, y1)`` to specify the top-left corner of the
+    aligned area with respect to ``img1``.
 
-    ``(x2, y2)`` specify the top-left corner of the aligned area with respect
-    to ``img2``.
+    ``x2y2``: a tuple ``(x2, y2)`` to specify the top-left corner of
+    the aligned area with respect to ``img2``.
 
     Either ``x1`` or ``x2`` must be 0, depending on whether ``img1`` is
     narrower or wider than ``img2``.  Both must be 0 if the two images
@@ -334,6 +334,8 @@ def diff(img1, img2, (x1, y1), (x2, y2)):
     If ``img1`` is narrower but taller than ``img2``, just swap the labels
     in the description above.
     """
+    x1, y1 = x1y1
+    x2, y2 = x2y2
     w1, h1 = img1.size
     w2, h2 = img2.size
     w, h = min(w1, w2), min(h1, h2)

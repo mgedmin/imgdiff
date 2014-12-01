@@ -4,9 +4,13 @@ Changes
 1.6.0 (unreleased)
 ------------------
 
-- Drop the --selftest option.
+- Add Python 3 support.
 
 - Make the --timeout option actually work.
+
+- Drop the --selftest option.  Add a real test suite with 100% coverage
+  (which actually means little, since these are smoke tests that don't
+  inspect the results for correctness.)
 
 
 1.5.0 (2013-08-11)

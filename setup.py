@@ -49,6 +49,8 @@ setup(name='imgdiff',
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Programming Language :: Python :: Implementation :: PyPy',
           'Topic :: Multimedia :: Graphics',
       ],
       py_modules=['imgdiff'],
@@ -59,4 +61,3 @@ setup(name='imgdiff',
           [console_scripts]
           imgdiff = imgdiff:main
       """)
-

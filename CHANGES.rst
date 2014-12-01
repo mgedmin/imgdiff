@@ -6,6 +6,8 @@ Changes
 
 - Drop the --selftest option.
 
+- Make the --timeout option actually work.
+
 
 1.5.0 (2013-08-11)
 ------------------

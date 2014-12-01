@@ -106,7 +106,7 @@ def main(argv=None):
                       help='highlight differences in a smarter way (EXPERIMENTAL)')
     parser.add_option('--opacity', type='int', default='64',
                       help='minimum opacity for highlighting (default %default)')
-    parser.add_option('--timeout', type='int', default='10',
+    parser.add_option('--timeout', type='float', default='10',
                       help='skip highlighting if it takes too long'
                            ' (default: %default seconds)')
 
@@ -409,7 +409,7 @@ class Progress(object):
             self.shown = False
 
 
-def best_diff(img1, img2):
+def best_diff(img1, img2, opts):
     """Find the best alignment of two images that minimizes the differences.
 
     Returns (diff, alignments) where ``diff`` is a difference map, and
@@ -426,7 +426,7 @@ def best_diff(img1, img2):
     xr = abs(w1 - w2) + 1
     yr = abs(h1 - h2) + 1
 
-    p = Progress(xr * yr)
+    p = Progress(xr * yr, timeout=opts.timeout)
     for x in range(xr):
         if w1 > w2:
             x1, x2 = x, 0
@@ -459,7 +459,7 @@ def simple_highlight(img1, img2, opts):
     """
 
     try:
-        diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2)
+        diff, ((x1, y1), (x2, y2)) = best_diff(img1, img2, opts)
     except KeyboardInterrupt:
         return None, None
     diff = diff.filter(ImageFilter.MaxFilter(9))
@@ -516,7 +516,7 @@ def slow_highlight(img1, img2, opts):
     yr = abs(h1 - h2) + 1
 
     try:
-        p = Progress(xr * yr)
+        p = Progress(xr * yr, timeout=opts.timeout)
         for x in range(xr):
             for y in range(yr):
                 p.next()

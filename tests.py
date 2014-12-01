@@ -55,13 +55,13 @@ class TestMain(unittest.TestCase):
                       sys.stderr.getvalue())
 
     def test_all_ok(self):
-        self.main('example1.png', 'example2.png', '--viewer', 'true')
+        self.main('example1.png', 'example2.png', '--viewer=true')
 
     def test_highlight(self):
-        self.main('example1.png', 'example2.png', '-H', '--viewer', 'true')
+        self.main('example1.png', 'example2.png', '-H', '--viewer=true')
 
     def test_smart_highlight(self):
-        self.main('example1.png', 'example2.png', '-S', '--viewer', 'true')
+        self.main('example1.png', 'example2.png', '-S', '--viewer=true')
 
     def test_outfile(self):
         fn = os.path.join(self.mkdtemp(), 'diff.png')
@@ -83,7 +83,7 @@ class TestMain(unittest.TestCase):
 
     def test_different_size_images_sloow(self):
         # tickle the unexplored branches in slow_highlight()
-        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-S', '--timeout=1')
+        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-S', '--timeout=10')
 
 
 class TestProgress(unittest.TestCase):

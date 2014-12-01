@@ -19,7 +19,7 @@ preview-pypi-description:
 
 .PHONY: test check
 test:
-	$(PYTHON) imgdiff.py --selftest
+	$(PYTHON) tests.py
 check:
 	detox
 

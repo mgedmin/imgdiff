@@ -1,9 +1,10 @@
 Changes
 =======
 
-1.5.1 (unreleased)
+1.6.0 (unreleased)
 ------------------
 
+- Drop the --selftest option.
 
 
 1.5.0 (2013-08-11)

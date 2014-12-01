@@ -50,7 +50,6 @@ Run ``imgdiff --help`` to see this help message::
       --sepcolor=RGB        separator line color (default: ccc)
       --spacing=N           spacing between images (default: 3 pixels)
       --border=N            border around images (default: 0 pixels)
-      --selftest            run unit tests
 
 
 Output Examples

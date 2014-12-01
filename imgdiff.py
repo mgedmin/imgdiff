@@ -11,8 +11,6 @@ import shutil
 import subprocess
 import tempfile
 import time
-import doctest
-import unittest
 
 # There are two ways PIL is packaged
 try:
@@ -21,7 +19,7 @@ except ImportError:
     import Image, ImageDraw, ImageChops, ImageFilter
 
 
-__version__ = "1.5.1.dev0"
+__version__ = "1.6.0dev"
 
 
 def parse_color(color):
@@ -126,14 +124,7 @@ def main():
     parser.add_option('--border', type='int', default=0, metavar='N',
                       help='border around images (default: %default pixels)')
 
-    parser.add_option('--selftest', action='store_true',
-                      help='run unit tests')
-
     opts, args = parser.parse_args()
-
-    if opts.selftest:
-        sys.argv[1:] = args
-        run_tests() # calls sys.exit()
 
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
@@ -551,19 +542,6 @@ def slow_highlight(img1, img2, opts):
     mask2 = tweak_diff(diff2, opts.opacity)
 
     return mask1, mask2
-
-
-def test_suite():
-    """Collect all the tests into a test suite."""
-    return doctest.DocTestSuite()
-
-
-def run_tests():
-    """Run the test suite.
-
-    Invokes sys.exit() with a zero or non-zero status code as appropriate
-    """
-    unittest.main(defaultTest='test_suite')
 
 
 if __name__ == '__main__':

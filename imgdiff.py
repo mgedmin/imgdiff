@@ -105,7 +105,8 @@ def main(argv=None):
     parser.add_option('-S', '--smart-highlight', action='store_true',
                       help='highlight differences in a smarter way (EXPERIMENTAL)')
     parser.add_option('--opacity', type='int', default='64',
-                      help='minimum opacity for highlighting (default %default)')
+                      help='opacity of similar areas for -H/-S'
+                           ' (range: 0..255, default %default)')
     parser.add_option('--timeout', type='float', default='10',
                       help='skip highlighting if it takes too long'
                            ' (default: %default seconds)')

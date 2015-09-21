@@ -9,7 +9,8 @@ python:
     - pypy
     - pypy3
 install:
-    - travis_retry pip install coverage coveralls -e .
+    - pip install coverage coveralls -e .
+    - if [ $TRAVIS_PYTHON_VERSION = 3.2 ]; then pip install 'coverage<4.0'; fi
 script:
     - coverage run --source=imgdiff.py tests.py
 after_success:

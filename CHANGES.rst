@@ -1,10 +1,12 @@
 Changes
 =======
 
-1.6.1 (unreleased)
+1.7.0 (unreleased)
 ------------------
 
 - Drop Python 2.6 support.
+
+- Drop Python 3.2 support.
 
 
 1.6.0 (2014-12-01)

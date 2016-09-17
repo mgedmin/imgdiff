@@ -1,12 +1,14 @@
 Changes
 =======
 
-1.7.0 (unreleased)
+1.7.0 (2016-09-17)
 ------------------
 
-- Drop Python 2.6 support.
+- Clarify the help message for the ``--opacity`` option.
 
-- Drop Python 3.2 support.
+- Add Python 3.5 support.
+
+- Drop Python 2.6 and 3.2 support.
 
 
 1.6.0 (2014-12-01)

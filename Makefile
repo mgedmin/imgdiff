@@ -81,7 +81,7 @@ release: releasechecklist
 	# I'm chicken so I won't actually do these things yet
 	@echo "Run"
 	@echo
-	@echo "  rm -rf dist && $(PYTHON) setup.py sdist && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`"
+	@echo "  rm -rf dist && $(PYTHON) setup.py sdist bdist_wheel && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo "  make docs"
 	@echo
 	@echo "Upload the build/docs.zip to https://pypi.python.org/pypi?:action=pkg_edit&name=imgdiff"

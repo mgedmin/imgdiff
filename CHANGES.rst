@@ -4,7 +4,7 @@ Changes
 1.7.1 (unreleased)
 ------------------
 
-- No changes yet.
+- Claim Python 3.6 support (no code changes required).
 
 
 1.7.0 (2016-09-17)

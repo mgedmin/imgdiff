@@ -6,6 +6,8 @@ Changes
 
 - Claim Python 3.6 support (no code changes required).
 
+- Drop Python 3.3 support.
+
 
 1.7.0 (2016-09-17)
 ------------------

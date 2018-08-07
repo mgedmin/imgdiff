@@ -4,7 +4,7 @@ Changes
 1.7.1 (unreleased)
 ------------------
 
-- Claim Python 3.6 support (no code changes required).
+- Claim Python 3.6 and 3.7 support (no code changes required).
 
 - Drop Python 3.3 support.
 

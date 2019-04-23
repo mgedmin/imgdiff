@@ -18,11 +18,11 @@ def read(filename):
 
 
 def get_version():
-    r = re.compile('^__version__ = "(.+)"$')
+    r = re.compile(r'''^__version__ = (["'])(.+)\1$''')
     for line in read('imgdiff.py').splitlines():
         m = r.match(line)
         if m:
-            return m.group(1)
+            return m.group(2)
 
 
 def get_description():

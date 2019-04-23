@@ -1,7 +1,7 @@
 Changes
 =======
 
-1.7.1 (unreleased)
+1.7.1 (2019-04-23)
 ------------------
 
 - Claim Python 3.6 and 3.7 support (no code changes required).

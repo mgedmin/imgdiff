@@ -17,7 +17,7 @@ preview-pypi-description:
 test:
 	$(PYTHON) tests.py
 check:
-	detox
+	tox -p auto
 
 .PHONY:
 coverage:

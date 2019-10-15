@@ -4,7 +4,7 @@ Changes
 1.7.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.8.
 
 
 1.7.1 (2019-04-23)

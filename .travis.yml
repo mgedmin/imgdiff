@@ -1,5 +1,4 @@
 language: python
-dist: xenial
 python:
     - 2.7
     - 3.5
@@ -11,8 +10,10 @@ python:
 install:
     - pip install coverage coveralls -e .
 script:
-    - coverage run --source=imgdiff.py tests.py
+    - coverage run tests.py
+    - coverage report -m --fail-under=100
 after_success:
     - coveralls
 notifications:
     email: false
+cache: pip

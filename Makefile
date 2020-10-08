@@ -1,4 +1,4 @@
-PYTHON = python
+PYTHON = python3
 
 FILE_WITH_VERSION = imgdiff.py
 FILE_WITH_CHANGELOG = CHANGES.rst
@@ -14,9 +14,7 @@ preview-pypi-description:
 	restview --long-description
 
 .PHONY: test check
-test:
-	$(PYTHON) tests.py
-check:
+test check:
 	tox -p auto
 
 .PHONY:

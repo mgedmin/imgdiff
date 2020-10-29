@@ -1,6 +1,9 @@
 imgdiff
 =======
 
+.. image:: https://travis-ci.com/mgedmin/imgdiff.svg?branch=master
+    :target: https://travis-ci.com/mgedmin/imgdiff
+
 A command-line tool that combines two pictures into a single, larger
 one, and opens a GUI window (provided by the Python Imaging Library)
 or an external image viewer.

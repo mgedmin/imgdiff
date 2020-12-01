@@ -1,8 +1,11 @@
 imgdiff
 =======
 
-.. image:: https://travis-ci.com/mgedmin/imgdiff.svg?branch=master
-    :target: https://travis-ci.com/mgedmin/imgdiff
+.. image:: https://github.com/mgedmin/imgdiff/workflows/build/badge.svg?branch=master
+    :target: https://github.com/mgedmin/imgdiff/actions
+
+.. image:: https://coveralls.io/repos/mgedmin/imgdiff/badge.svg?branch=master
+    :target: https://coveralls.io/r/mgedmin/imgdiff
 
 A command-line tool that combines two pictures into a single, larger
 one, and opens a GUI window (provided by the Python Imaging Library)

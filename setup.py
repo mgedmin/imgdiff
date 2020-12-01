@@ -60,6 +60,11 @@ setup(name='imgdiff',
       test_suite='imgdiff.test_suite',
       zip_safe=False,
       install_requires=['Pillow'],
+      extras_require={
+          'test': [
+              'mock',
+          ],
+      },
       entry_points="""
           [console_scripts]
           imgdiff = imgdiff:main

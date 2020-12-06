@@ -4,19 +4,25 @@ imgdiff by Marius Gedminas <marius@gedmin.as>
 
 Released under the MIT licence.
 """
-import os
-import sys
+
 import optparse
+import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 
-# There are two ways PIL is packaged
+# There are two ways PIL used to be packaged
 try:
-    from PIL import Image, ImageDraw, ImageChops, ImageFilter
+    from PIL import Image, ImageChops, ImageDraw, ImageFilter
 except ImportError:
-    import Image, ImageDraw, ImageChops, ImageFilter
+    # This is the old way, and probably nobody uses it anymore.  (PIL's dead
+    # anyway, Pillow supplanted it.)
+    import Image
+    import ImageChops
+    import ImageDraw
+    import ImageFilter
 
 
 __version__ = '1.7.2.dev0'

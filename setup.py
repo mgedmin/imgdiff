@@ -1,5 +1,6 @@
 #!/usr/bin/python
-import os, re
+import os
+import re
 
 from setuptools import setup
 

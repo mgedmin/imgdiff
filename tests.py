@@ -4,14 +4,15 @@ import shutil
 import sys
 import tempfile
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 import mock
 
 import imgdiff
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 @mock.patch('sys.stderr', StringIO())

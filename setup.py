@@ -42,6 +42,7 @@ setup(name='imgdiff',
       license='MIT',
       description='Present two images side-by-side for visual comparison',
       long_description=get_description(),
+      long_description_content_type='text/x-rst',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',

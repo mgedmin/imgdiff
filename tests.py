@@ -83,11 +83,23 @@ class TestMain(unittest.TestCase):
 
     def test_different_size_images(self):
         # tickle the unexplored branches in best_diff()
-        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-H', '--timeout=1')
+        self.main(
+            'set1/extra-info.png',
+            'set1/sample-graph.png',
+            '--viewer=true',
+            '-H',
+            '--timeout=1',
+        )
 
     def test_different_size_images_sloow(self):
         # tickle the unexplored branches in slow_highlight()
-        self.main('set1/extra-info.png', 'set1/sample-graph.png', '--viewer=true', '-S', '--timeout=10')
+        self.main(
+            'set1/extra-info.png',
+            'set1/sample-graph.png',
+            '--viewer=true',
+            '-S',
+            '--timeout=10',
+        )
 
 
 class TestProgress(unittest.TestCase):

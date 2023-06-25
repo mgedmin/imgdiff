@@ -25,7 +25,7 @@ except ImportError:
     import ImageFilter
 
 
-__version__ = '1.7.2.dev0'
+__version__ = '1.8.0.dev0'
 
 
 def parse_color(color):

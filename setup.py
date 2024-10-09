@@ -62,7 +62,6 @@ setup(name='imgdiff',
       ],
       python_requires=">=3.7",
       py_modules=['imgdiff'],
-      test_suite='imgdiff.test_suite',
       zip_safe=False,
       install_requires=['Pillow'],
       extras_require={

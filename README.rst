@@ -1,7 +1,7 @@
 imgdiff
 =======
 
-.. image:: https://github.com/mgedmin/imgdiff/workflows/build/badge.svg?branch=master
+.. image:: https://github.com/mgedmin/imgdiff/actions/workflows/build.yml/badge.svg?branch=master
     :target: https://github.com/mgedmin/imgdiff/actions
 
 .. image:: https://coveralls.io/repos/mgedmin/imgdiff/badge.svg?branch=master

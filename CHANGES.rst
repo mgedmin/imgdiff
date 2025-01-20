@@ -1,10 +1,10 @@
 Changes
 =======
 
-1.8.1 (unreleased)
+1.9.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Drop Python 3.7 support.
 
 
 1.8.0 (2024-10-09)

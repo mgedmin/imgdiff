@@ -141,6 +141,11 @@ def main(argv=None):
     if len(args) != 2:
         parser.error('expecting two arguments, got %d' % len(args))
 
+    if opts.spacing < 0:
+        parser.error('--spacing must be >= 0, got %d' % opts.spacing)
+    if opts.border < 0:
+        parser.error('--border must be >= 0, got %d' % opts.border)
+
     file1, file2 = args
 
     if os.path.isdir(file1) and os.path.isdir(file2):

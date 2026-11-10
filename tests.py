@@ -81,6 +81,16 @@ class TestMain(unittest.TestCase):
         self.main('set1/canary.png', 'set2', '--viewer', 'true')
         self.main('set1', 'set2/canary.png', '--viewer', 'true', '--tb')
 
+    def test_negative_spacing(self):
+        self.main('--spacing', '-1', 'example1.png', 'example2.png')
+        self.assertIn('error: --spacing must be >= 0, got -1',
+                      sys.stderr.getvalue())
+
+    def test_negative_border(self):
+        self.main('--border', '-2', 'example1.png', 'example2.png')
+        self.assertIn('error: --border must be >= 0, got -2',
+                      sys.stderr.getvalue())
+
     def test_different_size_images(self):
         # tickle the unexplored branches in best_diff()
         self.main(

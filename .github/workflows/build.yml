@@ -33,7 +33,7 @@ jobs:
           # pypy on windows has trouble building Pillow from source because
           # how are you going to apt-get install -y zlib-dev libjpeg-dev
           # when you're on Windows, eh?
-          - python-version: "pypy3.10"
+          - python-version: "pypy3.11"
             os: ubuntu-latest
 
     steps:
@@ -50,7 +50,7 @@ jobs:
             tox.ini
 
       - name: Install OS-level dependencies (Linux)
-        if: runner.os == 'Linux' && matrix.python-version == 'pypy3.10'
+        if: runner.os == 'Linux' && matrix.python-version == 'pypy3.11'
         run: |
           sudo apt-get install -y libjpeg-dev
 
